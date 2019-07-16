@@ -96,58 +96,76 @@ namespace ProjectWebBusiness
             return resInfo;
         }
 
-        public static List<Dictionary<string, object>> GetRole_authorization(string RoleId)
+        public static Dictionary<string, object> GetRole_authorization(string RoleId)
         {
-            List<Dictionary<string, object>> dictList = new List<Dictionary<string, object>>();
-            List<Dictionary<string, object>> dictdata = null;
-            List<Dictionary<string, object>> dictButtonlist = null;
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            //if (RoleId!="90")
-            //{
-            //    where = " and tb.Id='" + RoleId + "' ";
-            //}
-               
-            List<tbMenu> List = dal.GetRole_authorization(data);
-            //if (List != null && List.Count > 0)
-            //{
+            List<tbMenu> List = dal.GetRole_authorization(RoleId);
+            dtree InfoTreeNode = new dtree();
+            InfoTreeNode.id = "0";
+            InfoTreeNode.parentId ="0";
+            InfoTreeNode.dataType = "-1";
+            InfoTreeNode.checkArr = new dtree.checkArrInfo() { Checked = "0" };
+            InfoTreeNode.children = new List<dtree>();
+            GetTreeNode(List, InfoTreeNode);
+            Dictionary<string, object> status = new Dictionary<string, object>();
+            status.Add("code", 200);
+            status.Add("message", "操作成功");
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("status", status);
+            dict.Add("data", InfoTreeNode.children);
+            string test = Newtonsoft.Json.JsonConvert.SerializeObject(InfoTreeNode.children);
+            return dict;
+        }
+        public static void GetTreeNode(IList<tbMenu> lstPlace, dtree InfoTreeNode)
+        {
+            try
+            {
+                if (InfoTreeNode == null)
+                {
+                    InfoTreeNode = new dtree();
+                }
+                int chilCareType = 1;
+                chilCareType = Convert.ToInt16(InfoTreeNode.dataType) + 1;
+                foreach (tbMenu s in lstPlace)
+                {
+                    if (s.ParentId != Convert.ToInt32(InfoTreeNode.id) || s.MenuType != chilCareType)
+                    {
+                        continue;
+                    }
 
-            //    var tbMenuType1 = List.Where(i => i["MenuType"] == "1").ToList();
-            //    foreach (var item in tbMenuType1)
-            //    {
-            //        Dictionary<string, object> dict = new Dictionary<string, object>();
-            //        dictdata = new List<Dictionary<string, object>>();
-            //        var tbMenuType2 = List.Where(i => i["MenuType"] == "2" && i["ParentId"] == item["Id"]).ToList();
-            //        foreach (var info in tbMenuType2)
-            //        {
-            //            dictButtonlist = new List<Dictionary<string, object>>();
-            //            Dictionary<string, object> dict2 = new Dictionary<string, object>();
-            //            var tbButtonList = List.Where(i => i["MenuType"] == "3" && i["ParentId"] == info["Id"]).ToList();
-            //            foreach (var Button in tbButtonList)
-            //            {
-            //                Dictionary<string, object> dictButton = new Dictionary<string, object>();
-            //                dictButton.Add("title", Button["Name"]);
-            //                dictButton.Add("value", Button["Id"]);
-            //                dictButton.Add("Type", 3);
-            //                dictButton.Add("ParentId", Button["ParentId"]);
-            //                dictButton.Add("data","");
-            //                dictButtonlist.Add(dictButton);
-            //            }
-            //            dict2.Add("title", info["Name"]);
-            //            dict2.Add("value", info["Id"]);
-            //            dict2.Add("Type", 2);
-            //            dict2.Add("ParentId", info["ParentId"]);
-            //            dict2.Add("data", dictButtonlist);
-            //            dictdata.Add(dict2);
-            //        }
-            //        dict.Add("title", item["Name"]);
-            //        dict.Add("value", item["Id"]);
-            //        dict.Add("ParentId", item["ParentId"]);
-            //        dict.Add("Type",1);
-            //        dict.Add("data", dictdata);
-            //        dictList.Add(dict);
-            //    }
-           // }
-            return dictList;
+                    dtree _info = new dtree();
+                    _info.id = s.Id.ToString();
+                    _info.title = s.Name.ToString();
+                    _info.parentId = s.ParentId.ToString();
+                    _info.dataType = s.MenuType.ToString();
+                    _info.checkArr = new dtree.checkArrInfo() {  Checked="0"};
+                    GetTreeNode(lstPlace, _info);
+                    InfoTreeNode.children.Add(_info);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+        public class dtree
+        {
+            public string id { get; set; }
+            public string title { get; set; }
+            public string parentId { get; set; }
+            public checkArrInfo checkArr { get; set; }
+            public string dataType { get; set; }
+            public List<dtree> children { get; set; }
+            public class checkArrInfo
+            {
+                public string Checked { get; set; }
+            }
+            public dtree()
+            {
+                if (children == null)
+                    children = new List<dtree>();
+            }
+
         }
         public static ResultInfo Role_authorization(string RoleId, string authorizationStr)
         {

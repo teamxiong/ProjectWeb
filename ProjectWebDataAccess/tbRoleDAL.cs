@@ -59,18 +59,19 @@ namespace ProjectWebDataAccess
             return CurrentDb.DeleteByIds(Id.Split(','));
         }
 
-        public List<tbMenu> GetRole_authorization(Dictionary<string, string> data)
+        public List<tbMenu> GetRole_authorization(string RoleId)
         {
             var List1 = Db.Queryable<tbMenu, tbRoleMenu, tbRole>((t, tr, tb) => new object[] {
-                JoinType.Inner,t.Id==tr.MenuId,tr.RoleId==tb.Id
-});
-            var List2 = Db.Queryable<tbButton, tbRoleMenuButton, tbRole>((t, tr, tb) => new object[] {
-                JoinType.Inner,t.Id==tr.ButtonId,tr.RoleId==tb.Id
-}).Select((t, tr, tb) => new tbMenu { Id = t.Id, Name = t.Name, MenuType = 10 });
-
+                JoinType.Inner,t.Id==tr.MenuId,
+                JoinType.Inner,tr.RoleId==tb.Id
+}).Where((t, tr, tb) =>tb.Id==Convert.ToInt32(RoleId));
+//            var List2 = Db.Queryable<tbButton, tbRoleMenuButton, tbRole>((t, tr, tb) => new object[] {
+//                JoinType.Inner,t.Id==tr.ButtonId,
+//                 JoinType.Inner, tr.RoleId==tb.Id
+//}).Select((t, tr, tb) => new tbMenu { Id = t.Id, Name = t.Name,ParentId =tr.MenuId });
             List<tbMenu> InfoList = new List<tbMenu>();
             InfoList.AddRange(List1.Clone().ToList());
-            InfoList.AddRange(List2.Clone().ToList());
+         //   InfoList.AddRange(List2.Clone().ToList());
             return InfoList;
         }
         public bool Role_authorization(string RoleId, string[] IdArr)

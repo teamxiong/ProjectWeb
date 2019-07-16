@@ -17,12 +17,12 @@
         </div>
     </div>
 </div>
-
+<input type="hidden" id="authorizationStr" />
 @section scripts{
     <link href="~/lib/dtree/dtree/font/dtreefont.css" rel="stylesheet" />
     <link href="~/lib/dtree/dtree/dtree.css" rel="stylesheet" />
     <script type="text/javascript">
-
+        var Id = GetQueryString("Id");
         layui.extend({
             dtree: '/lib/dtree/dtree/dtree'
         }).use(['dtree'], function () {
@@ -365,16 +365,43 @@
                 $ = layui.$;
             dtree.render({
                 elem: "#checkbarTree2",
-                method: "GET",
-                data: data,
+                url: '/Home/GetRole_authorization',
               
                 checkbar: true
             });
 
             dtree.on("chooseDone('checkbarTree2')", function (obj) {
                 layer.msg(JSON.stringify(obj.checkbarParams)); // 选中的所有复选框的参数
+                $("#authorizationStr").val(JSON.stringify(obj.checkbarParams));
             });
-        });
+            });
+        $(function () {
+           
+            $("#Sava").click(function () {
+                var authorizationStr = "";
+                var authorization = eval($("#authorizationStr").val());
+                for (var i = 0; i < authorization.length; i++) {
+                    authorizationStr += authorization[i].nodeId + ",";
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/Role_authorization",
+                    data: { RoleId: Id, authorizationStr: authorizationStr.substring(0, authorizationStr.length - 1) },
+                    success: function (resInfo) {
+                        if (resInfo.res) {
+                        } else {
+                            Mmsg("分配失败:" + resInfo.info + " !");
+                        }
+                    },
+                    error: function (jqXHR) {
+                        Mmsg("系统繁忙 !");
+                        console.log("Error: " + jqXHR.status);
+                    }
+                });
 
+            });
+
+   
+        })
     </script>
 }

@@ -254,7 +254,7 @@ namespace ProjectWeb.Controllers
         public JsonResult GetRole_authorization()
         {
             string RoleId = Request.QueryString.Value;
-            List<Dictionary<string, object>> Role_authorization = tbRoleBusiness.GetRole_authorization(RoleId);
+           Dictionary<string, object> Role_authorization = tbRoleBusiness.GetRole_authorization("90");
             return Json(Role_authorization);
         }
         [HttpPost]
