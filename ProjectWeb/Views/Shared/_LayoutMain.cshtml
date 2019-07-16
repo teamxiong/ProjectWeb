@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <script src="~/js/jquery-1.10.2.js"></script>
+    <script src="~/js/layui-v2.5.4/layui.js"></script>
+    <link href="~/js/layui-v2.5.4/css/layui.css" rel="stylesheet" />
+    <script src="~/js/jquery-tmpl/jquery.tmpl.js"></script>
+    <script src="~/lib/layer/layer/layer.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+        });
+        function OpenFrom(id, title, Url, width, height) {
+            layer.open({
+                type: 2,
+                title: title,
+                shadeClose: false,
+                shade: 0.8,
+                maxmin: false, //开启最大化最小化按钮
+                area: [width, height],
+                content: Url,
+                end: function (e) {
+                    $('#' + id).click();
+                }
+            });
+        }
+        function GetQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+        function renderForm() {
+            layui.use('form', function () {
+                var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+                form.render();
+            });
+        }
+        function Mmsg(msg) {
+            layer.msg(msg);
+        }
+    </script>
+    @RenderSection("scripts", required: false)
+</head>
+<body>
+    <div>
+        @RenderBody()
+
+    </div>
+
+
+</body>
+</html>

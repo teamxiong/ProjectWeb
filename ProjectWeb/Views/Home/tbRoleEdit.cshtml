@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewBag.Title = "tbRoleEdit";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<form class="layui-form" action="">
+    <input type="hidden" id="Id" value="">
+    <div class="layui-row" style="margin-top:40px;"></div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">角色名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="RoleName" lay-verify="RoleName" autocomplete="off" placeholder="请输入角色名称" class="layui-input" id="RoleName">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">描述</label>
+                <div class="layui-input-block">
+                    <input type="text" name="Description" lay-verify="Description" class="layui-input" id="Description">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+
+
+</form>
+<div class="layui-row" style="margin-top:30px;">
+    <div class="layui-col-xs3">&nbsp;</div>
+    <div class="layui-col-xs4">
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-fluid" onclick="Sava();"> 保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        var state = GetQueryString("state");
+        $(function () {
+            if (state == "Edit") {
+                var Id = GetQueryString("Id");
+                var data = {
+                    Id: Id
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/GettbRoleByhwhere",
+                    async: false,
+                    data: { data: data },
+                    success: function (data) {
+                        Info = data[0];
+                        $("#Id").val(Info.id);
+                        $("#RoleName").val(Info.roleName);
+                        $("#Description").val(Info.description);
+                    },
+                    error: function (jqXHR) {
+                        console.log("Error: " + jqXHR.status);
+                    }
+                });
+            }
+        })
+
+        function Sava() {
+            if ($("#RoleName").val().trim() == '') {
+                Mmsg('角色名称为必填项！');
+                return false;
+            }
+            var data = {
+                Id: $("#Id").val(),
+                RoleName: $("#RoleName").val().trim(),
+                Description: $("#Description").val()
+            };
+            $.ajax({
+                type: "POST",
+                url: "/Home/SavatbRole?state=" + state,
+                data: { data: data },
+                success: function (result) {
+                    console.log(data);
+                    if (result.res) {
+                        Mmsg("操作成功!");
+                        window.parent.layer.closeAll();//关闭弹窗
+                    } else {
+                        Mmsg("提交失败:" + result.info + "!");
+                    }
+                },
+                error: function (result) {
+                    Mmsg("出错，错误信息：" + result.data);
+                    console.log("Error: " + result);
+                }
+            });
+        }
+    </script>
+}
+

@@ -1,0 +1,178 @@
+﻿
+@{
+    ViewBag.Title = "tbUserEdit";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+<form class="layui-form" action="" lay-filter="example">
+    <input type="hidden" id="Id" value="" name="Id">
+    <div class="layui-row" style="margin-top:40px;"></div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">登录账户</label>
+                <div class="layui-input-block">
+                    <input type="text" name="AccountName" lay-verify="AccountName" autocomplete="off"  class="layui-input" id="AccountName">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="RealName" lay-verify="RealName" class="layui-input" id="RealName">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系人手机</label>
+                <div class="layui-input-block">
+                    <input type="tel" name="MobilePhone" lay-verify="MobilePhone" class="layui-input" id="MobilePhone">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系人邮箱</label>
+                <div class="layui-input-block">
+                    <input type="text" name="Email" lay-verify="Email" class="layui-input" id="Email">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">是否启用</label>
+                <div class="layui-input-block">
+                    <input type="checkbox"   name="IsAble" lay-skin="switch" lay-filter="IsAble" lay-text="ON|OFF">
+                    <input type="hidden" id="IsAble" value="true">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <input type="text" name="Description" lay-verify="Description" class="layui-input" id="Description">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+</form>
+<div class="layui-row" style="margin-top:30px;">
+    <div class="layui-col-xs3">&nbsp;</div>
+    <div class="layui-col-xs4">
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-fluid" onclick="Sava();"> 保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var state = GetQueryString("state");
+        $(function () {
+            layui.use('form', function () {
+                var form = layui.form;
+        
+                if (state == "Edit") {
+                var Id = GetQueryString("Id");
+                var data = {
+                    Id: Id
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/GettbUserByhwhere",
+                    async: false,
+                    data: { data: data },
+                    success: function (data) {
+                        Info = data[0];
+                        form.val('example', {
+                            "IsAble": Info.isAble,  //开关状态
+                            "AccountName": Info.accountName,
+                            "RealName": Info.realName,
+                            "MobilePhone": Info.mobilePhone,
+                            "Email": Info.email,
+                            "Description": Info.description,
+                            "Id": Info.id
+                        })
+
+                    },
+                    error: function (jqXHR) {
+                        console.log("Error: " + jqXHR.status);
+                    }
+                });
+            }
+
+            form.on('switch(IsAble)', function (data) {
+                $("#IsAble").val((this.checked ? 'true' : 'false'));
+            });
+            });
+        })
+
+        function Sava() {
+            if ($("#AccountName").val().trim() == '') {
+                Mmsg('登录名为必填项！');
+                return false;
+            }
+            if ($("#RealName").val().trim() == '') {
+                Mmsg('用户名称为必填项！');
+                return false;
+            }
+            var data = {
+                Id: $("#Id").val(),
+                AccountName: $("#AccountName").val().trim(),
+                RealName: $("#RealName").val(),
+                MobilePhone: $("#MobilePhone").val().trim(),
+                Email: $("#Email").val(),
+                IsAble: $("#IsAble").val(),
+                Description: $("#Description").val()
+            };
+            $.ajax({
+                type: "POST",
+                url: "/Home/SavatbUser?state=" + state,
+                data: { data: data },
+                success: function (result) {
+                    console.log(data);
+                    if (result.res) {
+                        Mmsg("操作成功!");
+                        window.parent.layer.closeAll();//关闭弹窗
+                    } else {
+                        Mmsg("提交失败:" + result.info + "!");
+                    }
+                },
+                error: function (result) {
+                    Mmsg("出错，错误信息：" + result.data);
+                    console.log("Error: " + result);
+                }
+            });
+        }
+    </script>
+}
+
+
+
+

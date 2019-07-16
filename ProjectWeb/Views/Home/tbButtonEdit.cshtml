@@ -1,0 +1,172 @@
+﻿
+@{
+    ViewBag.Title = "tbButtonEdit";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<form class="layui-form" action="">
+    <input type="hidden" id="Id" value="">
+    <div class="layui-row" style="margin-top:40px;"></div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">按钮名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="Name" lay-verify="Name" autocomplete="off" placeholder="请输入按钮名称" class="layui-input" id="Name">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">标识码：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="Code" lay-verify="Code" autocomplete="off" placeholder="请输入标识码" class="layui-input" id="Code">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">描述</label>
+                <div class="layui-input-block">
+                    <input type="text" name="Description" lay-verify="Description"  class="layui-input" id="Description">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+
+                <label for="" class="layui-form-label">选择图标</label>
+                <div class="layui-input-block">
+                    <input type="text" id="iconPicker" lay-filter="iconPicker" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+
+</form>
+<div class="layui-row" style="margin-top:30px;">
+    <div class="layui-col-xs3">&nbsp;</div>
+    <div class="layui-col-xs4">
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-fluid" onclick="Sava();"> 保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/Content/js/common.js"></script>
+    <script>
+        var state =GetQueryString("state");
+        $(function () {
+            layui.use(['iconPicker'], function () {
+                var iconPicker = layui.iconPicker;
+                iconPicker.render({
+                    // 选择器，推荐使用input
+                    elem: '#iconPicker',
+                    // 数据类型：fontClass/unicode，推荐使用fontClass
+                    type: 'fontClass',
+                    // 是否开启搜索：true/false
+                    search: false,
+                    // 是否开启分页
+                    page: true,
+                    // 每页显示数量，默认12
+                    limit: 12,
+                    // 点击回调
+                    click: function (data) {
+                        console.log(data);
+                        $("#iconPicker").val(data.icon)
+                    }
+                });
+            });
+            if (state == "Edit")
+            {
+                var Id = GetQueryString("Id");
+                var data = {
+                    Id: Id
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/GettbButtonByhwhere",
+                    async:false,
+                    data: { data: data },
+                    success: function (data) {
+                        console.log(data);
+                        Info = data[0];
+                        $("#Id").val(Info.Id);
+                        $("#Name").val(Info.Name);
+                        $("#Code").val(Info.Code);
+                        $("#Description").val(Info.Description);
+                        $("#iconPicker").val(Info.Icon)
+                           layui.use(['iconPicker'], function () {
+                               var iconPicker = layui.iconPicker;
+                               iconPicker.checkIcon('iconPicker', Info.Icon);
+                           });
+                    },
+                    error: function (jqXHR) {
+                        console.log("Error: " + jqXHR.status);
+                    }
+                });
+            }
+
+            layui.use(['iconPicker', 'form'], function () {
+                var iconPicker = layui.iconPicker,
+                    form = layui.form;
+            })
+        })
+
+        function Sava()
+        {
+            if ($("#Name").val().trim() == '') {
+                Mmsg('菜单名称为必填项！');
+                return false;
+            }
+            if ($("#Code").val().trim() == '') {
+                Mmsg('标识码为必填项！');
+                return false;
+            }
+            var data = {
+                Id: $("#Id").val(),
+                Name: $("#Name").val().trim(),
+                Code: $("#Code").val(),
+                Description: $("#Description").val(),
+                Icon: $("#iconPicker").val()
+            };
+            $.ajax({
+                type: "POST",
+                url: "/Home/SavatbButton?state=" + state,
+                data: { data: data },
+                success: function (result) {
+                    console.log(data);
+                    if (result.res) {
+                        Mmsg("操作成功!");
+                        window.parent.layer.closeAll();//关闭弹窗
+                    } else
+                    {
+                        Mmsg("提交失败:" + result.info+ "!");
+                    }
+                },
+                error: function (result) {
+                    Mmsg("出错，错误信息：" + result.data);
+                    console.log("Error: " + result);
+                }
+            });
+        }
+    </script>
+}
+

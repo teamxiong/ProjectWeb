@@ -1,0 +1,214 @@
+﻿
+@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<form class="layui-form" action="">
+    <input type="hidden" id="Id" value="">
+    <div class="layui-row" style="margin-top:40px;"></div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">菜单名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入菜单名称" class="layui-input" id="Name">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">节点级别</label>
+                <div class="layui-input-block">
+                    <select name="MenuType" id="MenuType" lay-filter="MenuType">
+                        <option value="1">根节点</option>
+                        <option value="2">子节点</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">父节点</label>
+                <div class="layui-input-block">
+                    <select name="ParentId" id="ParentId" lay-filter="ParentId"></select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">链接地址</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入链接地址" class="layui-input" id="LinkAddress">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+
+                <label for="" class="layui-form-label">选择图标</label>
+                <div class="layui-input-block">
+                    <input type="text" id="iconPicker" lay-filter="iconPicker" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+
+</form>
+<div class="layui-row" style="margin-top:30px;">
+    <div class="layui-col-xs3">&nbsp;</div>
+    <div class="layui-col-xs4">
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-fluid" onclick="Sava();"> 保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+<script src="~/Content/js/common.js"></script>
+    <script>
+        var state =GetQueryString("state");
+        $(function () {
+            if (state == "Edit")
+            {
+                var Id = GetQueryString("Id");
+                var data = {
+                    Id: Id
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/GettbMenuByhwhere",
+                    async:false,
+                    data: { data: data },
+                    success: function (data) {
+                        console.log(data);
+                        Info = data[0];
+                        $("#Id").val(Info.Id);
+                        $("#Name").val(Info.Name);
+                        $("#MenuType").val(Info.MenuType);
+                        $("#LinkAddress").val(Info.LinkAddress);
+                        $("#iconPicker").val(Info.Icon)
+                        if (Info.MenuType != 1) {
+                            var data = {
+                                MenuType: Info.MenuType-1
+                            };
+                            GettbMenuName(data);
+                        }
+                     
+                        $("#ParentId").val(Info.ParentId);
+                           //layui.use(['iconPicker'], function () {
+                           //    var iconPicker = layui.iconPicker;
+                           //    iconPicker.checkIcon('iconPicker', Info.Icon);
+                           //});
+                    },
+                    error: function (jqXHR) {
+                        console.log("Error: " + jqXHR.status);
+                    }
+                });
+            }
+
+            layui.use(['iconPicker', 'form'], function () {
+                var iconPicker = layui.iconPicker,
+                    form = layui.form;
+
+                form.on('select(MenuType)', function (data) {
+                    var MenuType = data.value;
+                    if (MenuType == '' || MenuType == 1) {
+                        $('#ParentId').html('');
+                        renderForm();
+                        return false;
+                    }
+                    console.log(MenuType);
+                    var data = {
+                        MenuType: MenuType-1
+                    };
+                    GettbMenuName(data);
+                });
+            })
+        })
+
+        function Sava()
+        {
+            if ($("#Name").val().trim() == '') {
+                Mmsg('菜单名称为必填项！');
+                return false;
+            }
+            if ($("#LinkAddress").val().trim() == '' && $("#MenuType").val()!=1) {
+                Mmsg('链接地址为必填项！');
+                return false;
+            }
+            var data = {
+                Id: $("#Id").val(),
+                Name: $("#Name").val().trim(),
+                MenuType: $("#MenuType").val(),
+                ParentId: $("#ParentId").val(),
+                LinkAddress: $("#LinkAddress").val(),
+                Icon: $("#iconPicker").val()
+            };
+            $.ajax({
+                type: "POST",
+                url: "/Home/SavaMenu?state=" + state,
+                data: { data: data },
+                success: function (result) {
+                    console.log(data);
+                    if (result.res) {
+                        Mmsg("操作成功!");
+                        window.parent.layer.closeAll();//关闭弹窗
+                    } else
+                    {
+                        Mmsg("提交失败:" + result.info+ "!");
+                    }
+                },
+                error: function (result) {
+                    Mmsg("出错，错误信息：" + result.data);
+                    console.log("Error: " + result);
+                }
+            });
+        }
+        function GettbMenuName(data)
+        {
+            console.log(data);
+            $.ajax({
+                type: "POST",
+                url: "/Home/GettbMenuByhwhere",
+                data: { data: data },
+                success: function (data) {
+                    console.log(data);
+                    $('#ParentId').html('');
+                    $("#ParentIdscript").tmpl(data).appendTo('#ParentId');
+                    renderForm();
+                },
+                error: function (jqXHR) {
+                    console.log("Error: " + jqXHR.status);
+                }
+            });
+        }
+    </script>
+    <script id="ParentIdscript" type="text/x-jquery-tmpl">
+        <option value="{{= Id}}">{{= Name}}</option>
+    </script>
+
+}
+
+
+
