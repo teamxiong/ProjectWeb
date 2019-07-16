@@ -80,24 +80,9 @@ namespace ProjectWebBusiness
             }
         }
 
-        public static Dictionary<string, object> GettbMenuList(int StartPage, int PageSize, Dictionary<string, string> data)
+        public static List<tbMenu> GettbMenuList(int StartPage, int PageSize, Dictionary<string, string> data,ref int totalNumber)
         {
-            Dictionary<string, object> dictList = new Dictionary<string, object>();
-            string Filter = "";
-            if (!string.IsNullOrEmpty(data["Name"]))
-            {
-                Filter += string.Format(" and Name like'%{0}%' ", data["Name"]);
-            }
-            if (!string.IsNullOrEmpty(data["LinkAddress"]))
-            {
-                Filter += string.Format(" and LinkAddress like'%{0}%' ", data["LinkAddress"]);
-            }
-            if (!string.IsNullOrEmpty(data["MenuType"]))
-            {
-                Filter += string.Format(" and MenuType='{0}' ", data["MenuType"]);
-            }
-            dictList = dal.GettbMenuList(StartPage, PageSize, Filter);
-            return dictList;
+            return dal.GettbMenuList(StartPage, PageSize, data, ref totalNumber); ;
         }
         public static IList<tbMenu> GettbMenuByhwhere(Dictionary<string,string> dict)
         {

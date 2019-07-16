@@ -61,40 +61,40 @@ namespace ProjectWebDataAccess
 
         public List<tbMenu> GetRole_authorization(string RoleId)
         {
-            var List1 = Db.Queryable<tbMenu, tbRoleMenu, tbRole>((t, tr, tb) => new object[] {
+            List<tbMenu> InfoList = new List<tbMenu>();
+            if (RoleId=="90")
+            {
+                InfoList = Db.Queryable<tbMenu>().ToList();
+            }
+            else
+            {
+                var List1 = Db.Queryable<tbMenu, tbRoleMenu, tbRole>((t, tr, tb) => new object[] {
                 JoinType.Inner,t.Id==tr.MenuId,
                 JoinType.Inner,tr.RoleId==tb.Id
-}).Where((t, tr, tb) =>tb.Id==Convert.ToInt32(RoleId));
-//            var List2 = Db.Queryable<tbButton, tbRoleMenuButton, tbRole>((t, tr, tb) => new object[] {
-//                JoinType.Inner,t.Id==tr.ButtonId,
-//                 JoinType.Inner, tr.RoleId==tb.Id
-//}).Select((t, tr, tb) => new tbMenu { Id = t.Id, Name = t.Name,ParentId =tr.MenuId });
-            List<tbMenu> InfoList = new List<tbMenu>();
-            InfoList.AddRange(List1.Clone().ToList());
-         //   InfoList.AddRange(List2.Clone().ToList());
+}).Where((t, tr, tb) => tb.Id == Convert.ToInt32(RoleId));
+                InfoList.AddRange(List1.Clone().ToList());
+            }
             return InfoList;
         }
-        public bool Role_authorization(string RoleId, string[] IdArr)
+        public ResultInfo Role_authorization(int RoleId, List<tbRoleMenu> InfoList)
         {
-            bool Isok = false;
-            List<string> SqlList = new List<string>();
-            SqlList.Add(string.Format(" delete tbRoleMenu where   RoleId='{0}' ", RoleId));
-            SqlList.Add(string.Format("   delete tbRoleMenuButton where RoleId='{0}'  ", RoleId));
-            for (int i = 0; i < IdArr.Length; i++)
+            ResultInfo result = new ResultInfo();
+            try
             {
-                string[] arr = IdArr[i].Split(',');
-                if (arr[2] != "3")
+                var res = Db.Ado.UseTran(() =>
                 {
-                    SqlList.Add(string.Format(" INSERT INTO [dbo].[tbRoleMenu] ([RoleId] ,[MenuId]) VALUES ('{0}' ,'{1}') ", RoleId, arr[0]));
-                }
-                else
-                {
-                    SqlList.Add(string.Format("  INSERT INTO[dbo].[tbRoleMenuButton] ([RoleId] ,[MenuId] ,[ButtonId]) VALUES('{0}' ,'{1}' ,'{2}')  ",RoleId, arr[1], arr[0]));
-                }
+                    Db.Deleteable<tbRoleMenu>().Where(i => i.RoleId == RoleId).ExecuteCommand();
+                    Db.Insertable(InfoList).ExecuteCommand();
+                });
+                result.res = res.IsSuccess;
+                result.info = res.ErrorMessage;
             }
-
-            Isok = (SqlHelper.ExecuteNonQuery(SqlHelper.ConnectionString(),SqlList) > 0) ? true : false;
-            return Isok;
+            catch (Exception ex)
+            {
+                result.res = false;
+                result.info = ex.Message;
+            }
+            return result;
         }
     }
 }

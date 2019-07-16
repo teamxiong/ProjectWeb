@@ -167,13 +167,17 @@ namespace ProjectWebBusiness
             }
 
         }
-        public static ResultInfo Role_authorization(string RoleId, string authorizationStr)
+        public static ResultInfo Role_authorization(int RoleId, string authorizationStr)
         {
             ResultInfo resInfo = new ResultInfo();
             try
             {
-                string[] Idstr = authorizationStr.Split('%');
-                resInfo.res = dal.Role_authorization(RoleId, Idstr);
+                List<string> MenuIdList = authorizationStr.Split(',').ToList();
+                List<tbRoleMenu> InfoList = new List<tbRoleMenu>();
+                MenuIdList.ForEach(i => {
+                    InfoList.Add(new tbRoleMenu() { RoleId=RoleId, MenuId=Convert.ToInt32(i) });
+                });
+                resInfo = dal.Role_authorization(RoleId, InfoList);
             }
             catch (Exception ex)
             {

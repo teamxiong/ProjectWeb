@@ -16,6 +16,6 @@ namespace ProjectWebICoreService
         bool UptbRole(tbRole Info);
         bool DetbRole(string Id);
         List<tbMenu> GetRole_authorization(string RoleId);
-        bool Role_authorization(string RoleId, string[] IdArr);
+        ResultInfo Role_authorization(int RoleId, List<tbRoleMenu> InfoList);
     }
 }

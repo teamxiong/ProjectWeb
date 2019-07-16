@@ -32,14 +32,26 @@ namespace ProjectWebDataAccess
             List = SqlHelper.ConvertTo<tbMenu>(dt);
             return List;
         }
-        public Dictionary<string, object> GettbMenuList(int StartPage, int PageSize,string Filter)
+        public List<tbMenu> GettbMenuList(int StartPage, int PageSize,Dictionary<string,string> data,ref int totalNumber)
         {
-            Dictionary<string, object> ResultJson = new Dictionary<string, object>();
-            //String TableName = " tbMenu ";
-            //String Fields = " * ";
-            //string order = "id";
-            //ResultJson = Common.GetResultJsontwo(TableName, Fields, StartPage, PageSize, Filter, order);
-            return ResultJson;
+            var query = CurrentDb.AsQueryable();
+            if (data.ContainsKey("Name") && !string.IsNullOrEmpty(data["Name"]))
+            {
+                query.Where(i => i.Name.Contains(data["Name"]));
+            }
+            if (data.ContainsKey("LinkAddress") && !string.IsNullOrEmpty(data["LinkAddress"]))
+            {
+                query.Where(i => i.Name==data["LinkAddress"]);
+            }
+            if (data.ContainsKey("MenuType") && !string.IsNullOrEmpty(data["MenuType"]))
+            {
+                query.Where(i => i.MenuType == Convert.ToInt32(data["MenuType"]));
+            }
+            if (data.ContainsKey("LinkAddress") && !string.IsNullOrEmpty(data["LinkAddress"]))
+            {
+                query.Where(i => i.Name == data["Name"]);
+            }
+            return query.Clone().ToPageList(StartPage, PageSize, ref totalNumber);
         }
 
 

@@ -371,7 +371,7 @@
             });
 
             dtree.on("chooseDone('checkbarTree2')", function (obj) {
-                layer.msg(JSON.stringify(obj.checkbarParams)); // 选中的所有复选框的参数
+             //   layer.msg(JSON.stringify(obj.checkbarParams)); // 选中的所有复选框的参数
                 $("#authorizationStr").val(JSON.stringify(obj.checkbarParams));
             });
             });
@@ -389,6 +389,8 @@
                     data: { RoleId: Id, authorizationStr: authorizationStr.substring(0, authorizationStr.length - 1) },
                     success: function (resInfo) {
                         if (resInfo.res) {
+                            Mmsg("分配成功！");
+                            window.parent.layer.closeAll();//关闭弹窗
                         } else {
                             Mmsg("分配失败:" + resInfo.info + " !");
                         }

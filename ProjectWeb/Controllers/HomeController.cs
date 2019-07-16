@@ -49,11 +49,12 @@ namespace ProjectWeb.Controllers
             Dictionary<string, object> info = new Dictionary<string, object>();
             try
             {
-                Dictionary<string, object> dictList = tbMenuBusiness.GettbMenuList(page, limit, data);
+                int totalNumber = 0;
+               List<tbMenu> InfoList = tbMenuBusiness.GettbMenuList(page, limit, data,ref totalNumber);
                 info.Add("status", 200);
                 info.Add("message", "");
-                info.Add("total", (dictList == null) ? 0 : dictList["rowCount"]);
-                info.Add("rows", (dictList == null) ? null : dictList["rows"]);
+                info.Add("total", totalNumber);
+                info.Add("rows", InfoList);
             }
             catch (Exception ex)
             {
@@ -261,13 +262,13 @@ namespace ProjectWeb.Controllers
         public JsonResult Role_authorization(string RoleId, string authorizationStr)
         {
             ResultInfo resInfo = new ResultInfo();
-            if (string.IsNullOrEmpty(RoleId))
+            if (string.IsNullOrEmpty(RoleId)|| string.IsNullOrEmpty(authorizationStr))
             {
                 resInfo.res = false;
                 resInfo.info = "获取参数失败！";
                 return Json(resInfo);
             }
-            resInfo = tbRoleBusiness.Role_authorization(RoleId, authorizationStr);
+            resInfo = tbRoleBusiness.Role_authorization(Convert.ToInt32(RoleId), authorizationStr);
             return Json(resInfo);
         }
         #endregion
