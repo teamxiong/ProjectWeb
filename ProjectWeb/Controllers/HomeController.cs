@@ -13,7 +13,7 @@ namespace ProjectWeb.Controllers
     {
 
         public IActionResult Index()
-        {
+        { 
             return View();
         }
         [HttpPost]
