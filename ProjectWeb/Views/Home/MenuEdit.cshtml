@@ -11,36 +11,21 @@
         <div class="layui-col-xs1">&nbsp;</div>
         <div class="layui-col-xs10">
             <div class="layui-form-item">
+                <label class="layui-form-label">父节点</label>
+                <div class="layui-input-block">
+                    <ul id="ParentId" class="dtree" data-id="0"></ul>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
                 <label class="layui-form-label">菜单名称</label>
                 <div class="layui-input-block">
                     <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入菜单名称" class="layui-input" id="Name">
-                </div>
-            </div>
-        </div>
-        <div class="layui-col-xs1">&nbsp;</div>
-    </div>
-    <div class="layui-row">
-        <div class="layui-col-xs1">&nbsp;</div>
-        <div class="layui-col-xs10">
-            <div class="layui-form-item">
-                <label class="layui-form-label">节点级别</label>
-                <div class="layui-input-block">
-                    <select name="MenuType" id="MenuType" lay-filter="MenuType">
-                        <option value="1">根节点</option>
-                        <option value="2">子节点</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="layui-col-xs1">&nbsp;</div>
-    </div>
-    <div class="layui-row">
-        <div class="layui-col-xs1">&nbsp;</div>
-        <div class="layui-col-xs10">
-            <div class="layui-form-item">
-                <label class="layui-form-label">父节点</label>
-                <div class="layui-input-block">
-                    <select name="ParentId" id="ParentId" lay-filter="ParentId"></select>
                 </div>
             </div>
         </div>
@@ -85,85 +70,140 @@
 </div>
 
 @section scripts{
-<script src="~/Content/js/common.js"></script>
+    <link href="~/lib/dtree/dtree/font/dtreefont.css" rel="stylesheet" />
+    <link href="~/lib/dtree/dtree/dtree.css" rel="stylesheet" />
+    @*<script src="~/js/iconPicker.js"></script>*@
+    @*<script src="~/js/iconPicker.js"></script>*@
     <script>
-        var state =GetQueryString("state");
+        var state = GetQueryString("state");
+        layui.config({
+            base: ''
+        }).extend({
+            iconPicker: '/js/iconPicker',
+            dtree: '/lib/dtree/dtree/dtree'
+        });
+        //layui.extend({
+        //    dtree: '/lib/dtree/dtree/dtree'
+        //}).use(['dtree'], function () {
+        //    var element = layui.element,
+        //        layer = layui.layer,
+        //        form = layui.form,
+        //        dtree = layui.dtree,
+        //        $ = layui.$;
+        //    dtree.renderSelect({
+        //        elem: "#ParentId",
+        //        url: "/Home/GetRole_authorization",
+        //        done: function () {
+        //            //  dtree.dataInit("selTree3", "001003");
+        //            //  dtree.setSelectValue("selTree3"); // 也可以在这里指定，第二个参数如果不填，则会自动读取
+        //        }
+        //    });
+        //    dtree.on("node('ParentId')", function (obj) {
+        //        $("#ParentId").val(obj.param.nodeId);
+        //    });
+        //});
         $(function () {
-            if (state == "Edit")
-            {
+
+            layui.use(['iconPicker'], function () {
+                var iconPicker = layui.iconPicker;
+                iconPicker.render({
+                    // 选择器，推荐使用input
+                    elem: '#iconPicker',
+                    // 数据类型：fontClass/unicode，推荐使用fontClass
+                    type: 'fontClass',
+                    // 是否开启搜索：true/false
+                    search: false,
+                    // 是否开启分页
+                    page: true,
+                    // 每页显示数量，默认12
+                    limit: 12,
+                    // 点击回调
+                    click: function (data) {
+                        console.log(data);
+                        $("#iconPicker").val(data.icon)
+                    }
+                });
+            });
+            if (state == "Edit") {
                 var Id = GetQueryString("Id");
                 var data = {
                     Id: Id
                 };
                 $.ajax({
                     type: "POST",
-                    url: "/Home/GettbMenuByhwhere",
-                    async:false,
-                    data: { data: data },
+                    url: "/Home/GetMenuList",
+                    async: false,
+                    data: {
+                        data: data,
+                        page: 1,
+                        limit: 1
+                    },
                     success: function (data) {
                         console.log(data);
-                        Info = data[0];
-                        $("#Id").val(Info.Id);
-                        $("#Name").val(Info.Name);
-                        $("#MenuType").val(Info.MenuType);
-                        $("#LinkAddress").val(Info.LinkAddress);
-                        $("#iconPicker").val(Info.Icon)
-                        if (Info.MenuType != 1) {
-                            var data = {
-                                MenuType: Info.MenuType-1
-                            };
-                            GettbMenuName(data);
-                        }
-                     
-                        $("#ParentId").val(Info.ParentId);
-                           //layui.use(['iconPicker'], function () {
-                           //    var iconPicker = layui.iconPicker;
-                           //    iconPicker.checkIcon('iconPicker', Info.Icon);
-                           //});
+                        Info = data.rows[0];
+                        $("#Id").val(Info.id);
+                        $("#Name").val(Info.name);
+                        $("#LinkAddress").val(Info.linkAddress);
+                        $("#iconPicker").val(Info.icon);
+
+                        layui.use(['dtree'], function () {
+                            var dtree = layui.dtree;
+                            dtree.renderSelect({
+                                elem: "#ParentId",
+                                url: "/Home/GetRole_authorization",
+                                done: function () {
+                                    dtree.dataInit("ParentId", Info.parentId);
+                                    dtree.setSelectValue("ParentId");
+                                    $("#ParentId").val(Info.parentId);
+                                }
+                            });
+                            dtree.on("node('ParentId')", function (obj) {
+                                $("#ParentId").val(obj.param.nodeId);
+                            });
+
+                        });
+                        $("#ParentId").val(Info.parentId);
+                        layui.use(['iconPicker'], function () {
+                            var iconPicker = layui.iconPicker;
+                            iconPicker.checkIcon('iconPicker', Info.icon);
+                        });
                     },
                     error: function (jqXHR) {
                         console.log("Error: " + jqXHR.status);
                     }
                 });
-            }
-
-            layui.use(['iconPicker', 'form'], function () {
-                var iconPicker = layui.iconPicker,
-                    form = layui.form;
-
-                form.on('select(MenuType)', function (data) {
-                    var MenuType = data.value;
-                    if (MenuType == '' || MenuType == 1) {
-                        $('#ParentId').html('');
-                        renderForm();
-                        return false;
-                    }
-                    console.log(MenuType);
-                    var data = {
-                        MenuType: MenuType-1
-                    };
-                    GettbMenuName(data);
+            } else {
+                layui.use(['dtree'], function () {
+                    var dtree = layui.dtree;
+                    dtree.renderSelect({
+                        elem: "#ParentId",
+                        url: "/Home/GetRole_authorization",
+                        done: function () {
+                        }
+                    });
                 });
-            })
+            }
         })
 
-        function Sava()
-        {
+        function Sava() {
+            if ($("#ParentId").val().trim() == '') {
+                Mmsg('父节点为必填项！');
+                return false;
+            }
             if ($("#Name").val().trim() == '') {
                 Mmsg('菜单名称为必填项！');
                 return false;
             }
-            if ($("#LinkAddress").val().trim() == '' && $("#MenuType").val()!=1) {
+            if ($("#LinkAddress").val().trim() == '') {
                 Mmsg('链接地址为必填项！');
                 return false;
             }
             var data = {
                 Id: $("#Id").val(),
                 Name: $("#Name").val().trim(),
-                MenuType: $("#MenuType").val(),
                 ParentId: $("#ParentId").val(),
                 LinkAddress: $("#LinkAddress").val(),
-                Icon: $("#iconPicker").val()
+                 Icon: $("#iconPicker").val()
             };
             $.ajax({
                 type: "POST",
@@ -174,9 +214,8 @@
                     if (result.res) {
                         Mmsg("操作成功!");
                         window.parent.layer.closeAll();//关闭弹窗
-                    } else
-                    {
-                        Mmsg("提交失败:" + result.info+ "!");
+                    } else {
+                        Mmsg("提交失败:" + result.info + "!");
                     }
                 },
                 error: function (result) {
@@ -185,27 +224,6 @@
                 }
             });
         }
-        function GettbMenuName(data)
-        {
-            console.log(data);
-            $.ajax({
-                type: "POST",
-                url: "/Home/GettbMenuByhwhere",
-                data: { data: data },
-                success: function (data) {
-                    console.log(data);
-                    $('#ParentId').html('');
-                    $("#ParentIdscript").tmpl(data).appendTo('#ParentId');
-                    renderForm();
-                },
-                error: function (jqXHR) {
-                    console.log("Error: " + jqXHR.status);
-                }
-            });
-        }
-    </script>
-    <script id="ParentIdscript" type="text/x-jquery-tmpl">
-        <option value="{{= Id}}">{{= Name}}</option>
     </script>
 
 }

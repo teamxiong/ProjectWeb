@@ -51,62 +51,24 @@ namespace ProjectWebDataAccess
             {
                 query.Where(i => i.Name == data["Name"]);
             }
+            if (data.ContainsKey("Id") && !string.IsNullOrEmpty(data["Id"]))
+            {
+                query.Where(i => i.Id ==Convert.ToInt32(data["Id"]));
+            }
             return query.Clone().ToPageList(StartPage, PageSize, ref totalNumber);
         }
-
-
         public bool AddMenu(tbMenu Info)
         {
-            bool Isok = false;
-            string sql = @"INSERT  [dbo].[tbMenu] VALUES (@Name
-           ,@ParentId
-           ,@Code
-           ,@LinkAddress
-           ,@Icon
-           ,@MenuType
-           ,@IsEnable )";
-            SqlParameter[] paras = {
-                 new SqlParameter("@Name",Info.Name),
-                new SqlParameter("@ParentId",Info.ParentId),
-                 new SqlParameter("@Code",Info.Code),
-                  new SqlParameter("@LinkAddress",Info.LinkAddress),
-                   new SqlParameter("@Icon",Info.Icon),
-                    new SqlParameter("@MenuType",Info.MenuType),
-                     new SqlParameter("@IsEnable",Info.IsEnable)
-            };
-            Isok = (SqlHelper.ExecuteNonQuery(SqlHelper.ConnectionString(), CommandType.Text, sql, paras) > 0) ? true : false;
-            return Isok;
+            var result = CurrentDb.AsInsertable(Info).ExecuteCommand();
+            return result>0;
         }
         public bool UpMenu(tbMenu Info)
         {
-            bool Isok = false;
-            string sql = @" update  [dbo].[tbMenu] set 
-            Name=@Name
-            ,ParentId=@ParentId
-           ,Code=@Code
-           ,LinkAddress=@LinkAddress
-           ,Icon=@Icon
-           ,MenuType=@MenuType
-           ,IsEnable=@IsEnable where Id=@Id";
-            SqlParameter[] paras = {
-                  new SqlParameter("@Id",Info.Id),
-                 new SqlParameter("@Name",Info.Name),
-                new SqlParameter("@ParentId",Info.ParentId),
-                 new SqlParameter("@Code",Info.Code),
-                  new SqlParameter("@LinkAddress",Info.LinkAddress),
-                   new SqlParameter("@Icon",Info.Icon),
-                    new SqlParameter("@MenuType",Info.MenuType),
-                     new SqlParameter("@IsEnable",Info.IsEnable)
-            };
-            Isok = (SqlHelper.ExecuteNonQuery(SqlHelper.ConnectionString(), CommandType.Text, sql, paras) > 0) ? true : false;
-            return Isok;
+            return CurrentDb.Update(Info);
         }
         public bool DeMenu(string Id)
         {
-            bool Isok = false;
-            string sql = string.Format(@" delete tbMenu where Id in ({0}) ",Id);
-            Isok = (SqlHelper.ExecuteNonQuery(SqlHelper.ConnectionString(), CommandType.Text, sql, null) > 0) ? true : false;
-            return Isok;
+            return CurrentDb.DeleteByIds(Id.Split(','));
         }
     }
 }

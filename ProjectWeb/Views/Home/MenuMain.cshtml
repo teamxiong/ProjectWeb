@@ -26,18 +26,6 @@
                     </div>
                 </div>
             </div>
-            <div class="layui-col-xs3">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">节点级别</label>
-                    <div class="layui-input-block">
-                        <select name="MenuType" id="MenuType" lay-filter="MenuType">
-                            <option value="">所有</option>
-                            <option value="1">根节点</option>
-                            <option value="2">子节点</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
         </div>
     </form>
     <button class="layui-btn" id="reload" data-type="reload" style="display:none;">
@@ -52,239 +40,379 @@
 </div>
 
 @section scripts{
-    <script type="text/javascript">
-
-    $(function () {
-        layui.use('table', function () {
-            var table = layui.table, form = layui.form;
-            table.render({
-                id: "testReload",
-                method: "post",
-                elem: '#table'
-              , url: '/Home/GetMenuList'
-              , toolbar: '#toolbarDemo'
-              , limits: [20, 50, 100, 500, 800, 1000]
-              , title: '数据'
-              , cols: [[
-                        {type: 'checkbox', fixed: 'left'},
-						{ field: 'name', title: '菜单名称	' },
-                       { field: 'linkAddress', title: '链接地址'},
-						{ field: 'icon', title: '图标', templet: '#Icon' }
-              ]], where: {
-                  data: Getdata()
-              }
-              , page: true
-              , response: {
-                  statusCode: 200 //重新规定成功的状态码为 200，table 组件默认为 0
-
-              }
-                , parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
-                    console.log(res);
-                  return {
-                      "code": res.status, //解析接口状态
-                      "msg": res.message, //解析提示文本
-                      "count": res.total, //解析数据长度
-                      "data": res.rows //解析数据列表
-                  };
-              }
-            });
-            //监听锁定操作
-            form.on('checkbox(lockDemo)', function (obj) {
-                layer.tips("")
-                //  layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
-            });
-
-            var $ = layui.$, active = {
-                reload: function () {
-
-                    //执行重载
-                    table.reload('testReload', {
-                        page: {
-                            curr: 1 //重新从第 1 页开始
-                        }
-                      , where: {
-                          data:Getdata()
-                      }
-                    });
-                }
+    <script>
+        layui.config({
+            base: '/lib'
+        }).extend({
+            treetable: '/treeTable/treeTable'
+        }).use(['layer', 'table', 'treetable'], function () {
+            var $ = layui.jquery;
+            var table = layui.table;
+            var layer = layui.layer;
+            var treetable = layui.treetable;
+            var data = {
+                "code": 0,
+                "msg": "ok",
+                "data": [
+                    {
+                        "id": 1,
+                        "name": "xx",
+                        "sex": "male",
+                        "pid": -1
+                    },
+                    {
+                        "id": 2,
+                        "name": "xx",
+                        "sex": "male",
+                        "pid": 1
+                    },
+                    {
+                        "id": 3,
+                        "name": "xx",
+                        "sex": "male",
+                        "pid": 1
+                    },
+                    {
+                        "id": 4,
+                        "name": "xx",
+                        "sex": "male",
+                        "pid": 1
+                    },
+                    {
+                        "id": 5,
+                        "name": "xx",
+                        "sex": "male",
+                        "pid": -1
+                    },
+                    {
+                        "id": 6,
+                        "name": "xx",
+                        "sex": "male",
+                        "pid": 5
+                    },
+                    {
+                        "id": 7,
+                        "name": "xx",
+                        "sex": "male",
+                        "pid": 5
+                    },
+                    {
+                        "id": 8,
+                        "name": "xx",
+                        "sex": "male",
+                        "pid": 6
+                    },
+                    {
+                        "id": 9,
+                        "name": "xx",
+                        "sex": "male",
+                        "pid": 6
+                    },
+                    {
+                        "id": 10,
+                        "name": "xx",
+                        "sex": "male",
+                        "pid": 9
+                    },
+                    {
+                        "id": 11,
+                        "name": "xx",
+                        "sex": "male",
+                        "pid": 9
+                    }
+                ],
+                "count": 11
+            };
+            // 渲染表格
+            var renderTable = function () {
+                layer.load(2);
+                treetable.render({
+                    treeColIndex: 1,
+                    treeSpid:0,
+                    treeIdName: 'id',
+                    treePidName: 'parentId',
+                    treeDefaultClose: false,
+                    treeLinkage: false,
+                    method: "post",
+                    elem: '#table',
+                    url: '/Home/GetMenuList',
+                    where: {
+                        data: {is:""}, page: 1, limit:100},
+                    page: true,
+                     limits: [20, 50, 100, 500, 800, 1000]
+                    , title: '数据',
+                    cols: [[
+                        { type: 'checkbox', fixed: 'left' },
+                        { field: 'name', title: '菜单名称	' },
+                        { field: 'linkAddress', title: '链接地址' }
+                      //  { field: 'icon', title: '图标', templet: '#Icon' }
+                    ]],
+                    done: function () {
+                        layer.closeAll('loading');
+                    }
+                });
             };
 
-            $('#reload').on('click', function () {
-                var type = $(this).data('type');
-                active[type] ? active[type].call(this) : '';
+            renderTable();
+
+            $('#btn-expand').click(function () {
+                treetable.expandAll('#table1');
             });
 
-            //头工具栏事件
-            table.on('toolbar(test)', function (obj) {
-                var checkStatus = table.checkStatus(obj.config.id);
-                switch (obj.event) {
-                    case 'Add':
-                        OpenFrom('reload', '新增', '/Home/MenuEdit?state=Add', '40%', '70%');
-                        break;
-                    case 'edit':
-                        var data = checkStatus.data;
-                        if (data.length < 1) {
-                            Mmsg("未选择任何数据！");
-                            return false;
-                        }
-                        if (data.length > 1) {
-                            Mmsg("每次只能修改一条数据！");
-                            return false;
-                        }
-                        console.log(data);
-                        OpenFrom('reload', '编辑', '/Home/MenuEdit?state=Edit&Id=' + data[0].Id + '', '40%', '80%');
-                        break;
-                    case 'reload':
-              
-                        $('#reload').click();
-                        break;
-                    case 'Delete':
-                        var data = checkStatus.data;
-                        if (data.length < 1) {
-                            Mmsg("未选择任何数据！");
-                            return false;
-                        }
-                        var Idstr = "";
-                        for (var i = 0; i < checkStatus.data.length; i++) {
-                            Idstr += "'" + checkStatus.data[i].Id + "',";
-                        }
-                        Idstr = Idstr.substring(0, Idstr.length - 1);
-                        layer.confirm('确认删除？', {
-                            btn: ['确认', '取消'],
-                            offset: '200px'
-                        }, function (index) {
-                            layer.close(index);
-                            $.ajax({
-                                type: "POST",
-                                url: "/Home/SavaMenu?state=Delete",
-                                data: { data: { Id: Idstr } },
-                                success: function (resInfo) {
-                                    if (resInfo.res) {
-                                        Mmsg("删除成功 !");
-                                        $("#reload").click();
-                                    } else {
-                                        Mmsg("删除失败:" + resInfo.info + " !");
-                                    }
-                                },
-                                error: function (jqXHR) {
-                                    Mmsg("系统繁忙 !");
-                                    console.log("Error: " + jqXHR.status);
+            $('#btn-fold').click(function () {
+                treetable.foldAll('#table1');
+            });
+
+            $('#btn-refresh').click(function () {
+                renderTable();
+            });
+
+            //监听工具条
+            table.on('tool(table1)', function (obj) {
+                var data = obj.data;
+                var layEvent = obj.event;
+
+                if (layEvent === 'del') {
+                    layer.msg('删除' + data.id);
+                } else if (layEvent === 'edit') {
+                    layer.msg('修改' + data.id);
+                }
+            });
+        });
+    </script>
+    @*<script type="text/javascript">
+
+            $(function () {
+                layui.use('table', function () {
+                    var table = layui.table, form = layui.form;
+                    table.render({
+                        id: "testReload",
+                        method: "post",
+                        elem: '#table'
+                      , url: '/Home/GetMenuList'
+                      , toolbar: '#toolbarDemo'
+                      , limits: [20, 50, 100, 500, 800, 1000]
+                      , title: '数据'
+                      , cols: [[
+                                {type: 'checkbox', fixed: 'left'},
+                                { field: 'name', title: '菜单名称	' },
+                               { field: 'linkAddress', title: '链接地址'},
+                                { field: 'icon', title: '图标', templet: '#Icon' }
+                      ]], where: {
+                          data: Getdata()
+                      }
+                      , page: true
+                      , response: {
+                          statusCode: 200 //重新规定成功的状态码为 200，table 组件默认为 0
+
+                      }
+                        , parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
+                            console.log(res);
+                          return {
+                              "code": res.status, //解析接口状态
+                              "msg": res.message, //解析提示文本
+                              "count": res.total, //解析数据长度
+                              "data": res.rows //解析数据列表
+                          };
+                      }
+                    });
+                    //监听锁定操作
+                    form.on('checkbox(lockDemo)', function (obj) {
+                        layer.tips("")
+                        //  layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
+                    });
+
+                    var $ = layui.$, active = {
+                        reload: function () {
+
+                            //执行重载
+                            table.reload('testReload', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
                                 }
+                              , where: {
+                                  data:Getdata()
+                              }
                             });
-                        });
-                        break;
-                    case "setmenubutton":
-                        var data = checkStatus.data;
-                        if (data.length < 1) {
-                            Mmsg("未选择任何数据！");
-                            return false;
                         }
-                        if (data.length > 1) {
-                            Mmsg("每次只能选择一条数据！");
-                            return false;
-                        }
-                        var MenuId = data[0].Id;
-                        var data = {
-                            title: '按钮名称',
-                            MenuId: MenuId
-                        };
-                        var datastr = JSON.stringify(data);
-                        datastr = encodeURI(datastr);
-                        layer.open({
-                            type: 2,
-                            title: "分配按钮",
-                            shadeClose: false,
-                            shade: 0.8,
-                            maxmin: false, //开启最大化最小化按钮
-                            area: ['60%', '80%'],
-                            content: "/Home/CommonHelpView?Type=setmenubutton&Url=/Home/GettbButtonByMenuIdList&data=" + datastr,
-                            btn: ['确定', '关闭'],
-                            yes: function (index) {
-                                var res = window["layui-layer-iframe" + index].callbackdata();
-                                if (res.length < 1) {
+                    };
+
+                    $('#reload').on('click', function () {
+                        var type = $(this).data('type');
+                        active[type] ? active[type].call(this) : '';
+                    });
+
+                    //头工具栏事件
+                    table.on('toolbar(test)', function (obj) {
+                        var checkStatus = table.checkStatus(obj.config.id);
+                        switch (obj.event) {
+                            case 'Add':
+                                OpenFrom('reload', '新增', '/Home/MenuEdit?state=Add', '40%', '70%');
+                                break;
+                            case 'edit':
+                                var data = checkStatus.data;
+                                if (data.length < 1) {
                                     Mmsg("未选择任何数据！");
                                     return false;
                                 }
-                                var ButtonIdstr = "";
-                                for (var i = 0; i < res.length; i++) {
-                                    ButtonIdstr += res[i].Id + ','
+                                if (data.length > 1) {
+                                    Mmsg("每次只能修改一条数据！");
+                                    return false;
                                 }
-                                ButtonIdstr = ButtonIdstr.substring(0, ButtonIdstr.length-1);
-                                console.log(res);
+                                console.log(data);
+                                OpenFrom('reload', '编辑', '/Home/MenuEdit?state=Edit&Id=' + data[0].id + '', '40%', '80%');
+                                break;
+                            case 'reload':
+
+                                $('#reload').click();
+                                break;
+                            case 'Delete':
+                                var data = checkStatus.data;
+                                if (data.length < 1) {
+                                    Mmsg("未选择任何数据！");
+                                    return false;
+                                }
+                                var Idstr = "";
+                                for (var i = 0; i < checkStatus.data.length; i++) {
+                                    Idstr += "" + checkStatus.data[i].id + ",";
+                                }
+                                Idstr = Idstr.substring(0, Idstr.length - 1);
+                                layer.confirm('确认删除？', {
+                                    btn: ['确认', '取消'],
+                                    offset: '200px'
+                                }, function (index) {
+                                    layer.close(index);
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/Home/SavaMenu?state=Delete",
+                                        data: { data: { Id: Idstr } },
+                                        success: function (resInfo) {
+                                            if (resInfo.res) {
+                                                Mmsg("删除成功 !");
+                                                $("#reload").click();
+                                            } else {
+                                                Mmsg("删除失败:" + resInfo.info + " !");
+                                            }
+                                        },
+                                        error: function (jqXHR) {
+                                            Mmsg("系统繁忙 !");
+                                            console.log("Error: " + jqXHR.status);
+                                        }
+                                    });
+                                });
+                                break;
+                            case "setmenubutton":
+                                var data = checkStatus.data;
+                                if (data.length < 1) {
+                                    Mmsg("未选择任何数据！");
+                                    return false;
+                                }
+                                if (data.length > 1) {
+                                    Mmsg("每次只能选择一条数据！");
+                                    return false;
+                                }
+                                var MenuId = data[0].id;
                                 var data = {
-                                    ButtonIdstr: ButtonIdstr,
+                                    title: '按钮名称',
                                     MenuId: MenuId
                                 };
-                                var ok = false;
-                                $.ajax({
-                                    type: "POST",
-                                    url: "/Home/SavatbMenuButton",
-                                    data: data,
-                                    async: false,
-                                    success: function (resInfo) {
-                                        console.log(resInfo);
-                                        if (resInfo.res) {
-                                            Mmsg("分配成功 !");
-                                            ok = true;
-                                        } else {
-                                            Mmsg("分配失败:" + resInfo.info + " !");
-                                            ok = false;
+                                var datastr = JSON.stringify(data);
+                                datastr = encodeURI(datastr);
+                                layer.open({
+                                    type: 2,
+                                    title: "分配按钮",
+                                    shadeClose: false,
+                                    shade: 0.8,
+                                    maxmin: false, //开启最大化最小化按钮
+                                    area: ['60%', '80%'],
+                                    content: "/Home/CommonHelpView?Type=setmenubutton&Url=/Home/GettbButtonByMenuIdList&data=" + datastr,
+                                    btn: ['确定', '关闭'],
+                                    yes: function (index) {
+                                        var res = window["layui-layer-iframe" + index].callbackdata();
+                                        if (res.length < 1) {
+                                            Mmsg("未选择任何数据！");
+                                            return false;
                                         }
+                                        var ButtonIdstr = "";
+                                        for (var i = 0; i < res.length; i++) {
+                                            ButtonIdstr += res[i].Id + ','
+                                        }
+                                        ButtonIdstr = ButtonIdstr.substring(0, ButtonIdstr.length-1);
+                                        console.log(res);
+                                        var data = {
+                                            ButtonIdstr: ButtonIdstr,
+                                            MenuId: MenuId
+                                        };
+                                        var ok = false;
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/Home/SavatbMenuButton",
+                                            data: data,
+                                            async: false,
+                                            success: function (resInfo) {
+                                                console.log(resInfo);
+                                                if (resInfo.res) {
+                                                    Mmsg("分配成功 !");
+                                                    ok = true;
+                                                } else {
+                                                    Mmsg("分配失败:" + resInfo.info + " !");
+                                                    ok = false;
+                                                }
+                                            },
+                                            error: function (jqXHR) {
+                                                Mmsg("系统繁忙 !");
+                                                console.log("Error: " + jqXHR.status);
+                                            }
+                                        });
+                                        if (!ok) {
+                                            return false
+                                        }
+                                        layer.close(index);
+                                        return;
                                     },
-                                    error: function (jqXHR) {
-                                        Mmsg("系统繁忙 !");
-                                        console.log("Error: " + jqXHR.status);
+                                    end: function (e) {
                                     }
                                 });
-                                if (!ok) {
-                                    return false
-                                }
-                                layer.close(index);
-                                return;
-                            },
-                            end: function (e) {
-                            }
-                        });
-                        break;
-                };
+                                break;
+                        };
+                    });
+
+                });
             });
 
-        });
-    });
 
-
-    function Getdata() {
-        var data = {
-            Name: $("#Name").val().trim(),
-            LinkAddress: $("#LinkAddress").val().trim(),
-            MenuType: $("#MenuType").val()
-        };
-        return data;
-    }
-</script>
-<script type="text/html" id="Icon">
-    {{#  if(d.Icon=== ''){ }}
-    <span style="color: #F581B1;"></span>
-    {{#  } else { }}
-    <i class="layui-icon {{ d.Icon }}"></i>
-    {{#  } }}
-</script>
-<script type="text/html" id="toolbarDemo">
-    <button class="layui-btn" id="reload" data-type="reload" lay-event="reload">
-        <i class="layui-icon">&#xe615;</i> 搜索
-    </button>
-    <button class="layui-btn" id="Add" data-type="Add" lay-event="Add">
-        <i class="layui-icon">&#xe654;</i> 新增
-    </button>
-    <button class="layui-btn" id="edit" data-type="edit" lay-event="edit">
-        <i class="layui-icon">&#xe615;</i> 编辑
-    </button>
-    <button class="layui-btn" id="edit" data-type="edit" lay-event="Delete">
-        <i class="layui-icon">&#xe615;</i> 删除
-    </button>
-    <button class="layui-btn" id="edit" data-type="edit" lay-event="setmenubutton">
-        <i class="layui-icon">&#xe615;</i> 分配按钮
-    </button>
-</script>
-    }
+            function Getdata() {
+                var data = {
+                    Name: $("#Name").val().trim(),
+                    LinkAddress: $("#LinkAddress").val().trim(),
+                    MenuType: $("#MenuType").val()
+                };
+                return data;
+            }
+        </script>
+        <script type="text/html" id="Icon">
+            {{#  if(d.Icon=== ''){ }}
+            <span style="color: #F581B1;"></span>
+            {{#  } else { }}
+            <i class="layui-icon {{ d.Icon }}"></i>
+            {{#  } }}
+        </script>
+        <script type="text/html" id="toolbarDemo">
+            <button class="layui-btn" id="reload" data-type="reload" lay-event="reload">
+                <i class="layui-icon">&#xe615;</i> 搜索
+            </button>
+            <button class="layui-btn" id="Add" data-type="Add" lay-event="Add">
+                <i class="layui-icon">&#xe654;</i> 新增
+            </button>
+            <button class="layui-btn" id="edit" data-type="edit" lay-event="edit">
+                <i class="layui-icon">&#xe615;</i> 编辑
+            </button>
+            <button class="layui-btn" id="edit" data-type="edit" lay-event="Delete">
+                <i class="layui-icon">&#xe615;</i> 删除
+            </button>
+            <button class="layui-btn" id="edit" data-type="edit" lay-event="setmenubutton">
+                <i class="layui-icon">&#xe615;</i> 分配按钮
+            </button>
+        </script>*@
+}
 

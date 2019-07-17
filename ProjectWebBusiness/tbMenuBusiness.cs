@@ -82,7 +82,7 @@ namespace ProjectWebBusiness
 
         public static List<tbMenu> GettbMenuList(int StartPage, int PageSize, Dictionary<string, string> data,ref int totalNumber)
         {
-            return dal.GettbMenuList(StartPage, PageSize, data, ref totalNumber); ;
+            return dal.GettbMenuList(StartPage, PageSize, data, ref totalNumber); 
         }
         public static IList<tbMenu> GettbMenuByhwhere(Dictionary<string,string> dict)
         {
@@ -103,13 +103,15 @@ namespace ProjectWebBusiness
             ResultInfo resInfo = new ResultInfo();
             try
             {
-                tbMenu Info = new tbMenu();
-                Info.Name = data["Name"];
-                Info.MenuType = Convert.ToInt32(data["MenuType"]);
-                Info.ParentId = string.IsNullOrEmpty(data["ParentId"]) ? 0:Convert.ToInt32(data["ParentId"]);
-                Info.Icon = data["Icon"];
-                Info.LinkAddress = data["LinkAddress"];
-                Info.IsEnable = "1";
+                tbMenu Info = new tbMenu
+                {
+                    Name = data["Name"],
+                    MenuType = 0,
+                    ParentId = Convert.ToInt32(data["ParentId"]),
+                    Icon = data["Icon"],
+                    LinkAddress = data["LinkAddress"],
+                    IsEnable = "1"
+                };
                 resInfo.res = dal.AddMenu(Info);
             }
             catch (Exception ex)
@@ -127,8 +129,7 @@ namespace ProjectWebBusiness
                 tbMenu Info = new tbMenu();
                 Info.Id = Convert.ToInt32(data["Id"]);
                 Info.Name = data["Name"];
-                Info.MenuType = Convert.ToInt32(data["MenuType"]);
-                Info.ParentId = string.IsNullOrEmpty(data["ParentId"]) ? 0 : Convert.ToInt32(data["ParentId"]);
+                Info.ParentId = Convert.ToInt32(data["ParentId"]);
                 Info.Icon = data["Icon"];
                 Info.LinkAddress = data["LinkAddress"];
                 Info.IsEnable = "1";

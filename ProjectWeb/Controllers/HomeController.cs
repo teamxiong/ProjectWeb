@@ -51,10 +51,10 @@ namespace ProjectWeb.Controllers
             {
                 int totalNumber = 0;
                List<tbMenu> InfoList = tbMenuBusiness.GettbMenuList(page, limit, data,ref totalNumber);
-                info.Add("status", 200);
-                info.Add("message", "");
-                info.Add("total", totalNumber);
-                info.Add("rows", InfoList);
+                info.Add("code", 0);
+                info.Add("msg", "");
+                info.Add("count", totalNumber);
+                info.Add("data", InfoList);
             }
             catch (Exception ex)
             {
@@ -66,7 +66,7 @@ namespace ProjectWeb.Controllers
         public JsonResult SavaMenu(Dictionary<string, string> data)
         {
             ResultInfo resInfo = new ResultInfo();
-            string state = Request.QueryString.Value;
+            string state = Request.Query["state"];
             if (data == null || string.IsNullOrEmpty(state))
             {
                 resInfo.res = false;
@@ -146,7 +146,7 @@ namespace ProjectWeb.Controllers
         public JsonResult SavatbButton(Dictionary<string, string> data)
         {
             ResultInfo resInfo = new ResultInfo();
-            string state = Request.QueryString.Value;
+            string state = Request.Query["state"];
             if (data == null || string.IsNullOrEmpty(state))
             {
                 resInfo.res = false;
@@ -254,8 +254,8 @@ namespace ProjectWeb.Controllers
         [HttpPost]
         public JsonResult GetRole_authorization()
         {
-            string RoleId = Request.QueryString.Value;
-           Dictionary<string, object> Role_authorization = tbRoleBusiness.GetRole_authorization("90");
+            string RoleId = Request.Query["RoleId"];
+            Dictionary<string, object> Role_authorization = tbRoleBusiness.GetRole_authorization("90");
             return Json(Role_authorization);
         }
         [HttpPost]
