@@ -9,7 +9,6 @@ namespace ProjectWebICoreService
    public interface tbMenuICoreService
     {
          IList<tbMenu> GettbMenu(string UserId);
-        IList<tbMenu> GettbMenuByhwhere(string where);
         List<tbMenu> GettbMenuList(int StartPage, int PageSize, Dictionary<string, string> data, ref int totalNumber);
         bool AddMenu(tbMenu Info);
         bool UpMenu(tbMenu Info);

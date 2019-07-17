@@ -15,23 +15,15 @@ namespace ProjectWebDataAccess
     {
         public IList<tbMenu> GettbMenu(string UserId)
         {
-            IList<tbMenu> List = new List<tbMenu>();
             var list = Db.Queryable<tbMenu, tbRoleMenu, tbRole, tbUserRole, tbUser>((t1, t2, t3, t4, t5) => new object[] {
                 JoinType.Inner,t1.Id==t2.MenuId,
                 JoinType.Inner,t2.RoleId==t3.Id,
                 JoinType.Inner,t3.Id==t4.RoleId,
                 JoinType.Inner,t4.UserId==t5.Id
             }).Where((t1, t2, t3, t4, t5) => t5.Id== Convert.ToInt32(UserId)).OrderBy((t1)=>t1.MenuType).ToList();
-
             return list;
         }
-        public IList<tbMenu> GettbMenuByhwhere(string where)
-        {
-            IList<tbMenu> List = new List<tbMenu>();
-            DataTable dt = SqlHelper.GetDataTable(SqlHelper.ConnectionString(), CommandType.Text, string.Format("select * from tbMenu where 1=1 {0} ", where), null);
-            List = SqlHelper.ConvertTo<tbMenu>(dt);
-            return List;
-        }
+
         public List<tbMenu> GettbMenuList(int StartPage, int PageSize,Dictionary<string,string> data,ref int totalNumber)
         {
             var query = CurrentDb.AsQueryable();

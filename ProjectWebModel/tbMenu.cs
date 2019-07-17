@@ -41,5 +41,7 @@ namespace ProjectWebModel
         public int MenuType { get; set; }
         public string IsEnable { get; set; }
 
+        public string IsMenu { get; set; }
+
     }
 }

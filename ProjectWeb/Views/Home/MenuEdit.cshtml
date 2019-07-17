@@ -35,9 +35,22 @@
         <div class="layui-col-xs1">&nbsp;</div>
         <div class="layui-col-xs10">
             <div class="layui-form-item">
+                <label class="layui-form-label">类型</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="IsMenu" value="0" title="菜单" checked="">
+                    <input type="radio" name="IsMenu" value="1" title="按钮">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
                 <label class="layui-form-label">链接地址</label>
                 <div class="layui-input-block">
-                    <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入链接地址" class="layui-input" id="LinkAddress">
+                    <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入链接地址" class="layui-input" id="LinkAddress" >
                 </div>
             </div>
         </div>
@@ -68,12 +81,10 @@
         </div>
     </div>
 </div>
-
+<input type="hidden"  id="level" value=""/>
 @section scripts{
     <link href="~/lib/dtree/dtree/font/dtreefont.css" rel="stylesheet" />
     <link href="~/lib/dtree/dtree/dtree.css" rel="stylesheet" />
-    @*<script src="~/js/iconPicker.js"></script>*@
-    @*<script src="~/js/iconPicker.js"></script>*@
     <script>
         var state = GetQueryString("state");
         layui.config({
@@ -82,30 +93,22 @@
             iconPicker: '/js/iconPicker',
             dtree: '/lib/dtree/dtree/dtree'
         });
-        //layui.extend({
-        //    dtree: '/lib/dtree/dtree/dtree'
-        //}).use(['dtree'], function () {
-        //    var element = layui.element,
-        //        layer = layui.layer,
-        //        form = layui.form,
-        //        dtree = layui.dtree,
-        //        $ = layui.$;
-        //    dtree.renderSelect({
-        //        elem: "#ParentId",
-        //        url: "/Home/GetRole_authorization",
-        //        done: function () {
-        //            //  dtree.dataInit("selTree3", "001003");
-        //            //  dtree.setSelectValue("selTree3"); // 也可以在这里指定，第二个参数如果不填，则会自动读取
-        //        }
-        //    });
-        //    dtree.on("node('ParentId')", function (obj) {
-        //        $("#ParentId").val(obj.param.nodeId);
-        //    });
-        //});
         $(function () {
 
-            layui.use(['iconPicker'], function () {
-                var iconPicker = layui.iconPicker;
+            layui.use(['iconPicker','form'], function () {
+                
+         
+                var iconPicker = layui.iconPicker, form = layui.form;
+                form.on('radio', function (data) {
+                    console.log(data.value); //被点击的radio的value值
+                    if (data.value == 0) {
+                        $("#LinkAddress").attr("readonly", false);
+                    } else {
+                        $("#LinkAddress").val('');
+                        $("#LinkAddress").attr("readonly", true);
+                    }
+                });
+             
                 iconPicker.render({
                     // 选择器，推荐使用input
                     elem: '#iconPicker',
@@ -139,13 +142,12 @@
                         limit: 1
                     },
                     success: function (data) {
-                        console.log(data);
-                        Info = data.rows[0];
+                        Info = data.data[0];
                         $("#Id").val(Info.id);
                         $("#Name").val(Info.name);
                         $("#LinkAddress").val(Info.linkAddress);
                         $("#iconPicker").val(Info.icon);
-
+                        $("input:radio[value='" + Info.isMenu+"']").attr('checked', 'true');
                         layui.use(['dtree'], function () {
                             var dtree = layui.dtree;
                             dtree.renderSelect({
@@ -159,6 +161,7 @@
                             });
                             dtree.on("node('ParentId')", function (obj) {
                                 $("#ParentId").val(obj.param.nodeId);
+                                $("#level").val(obj.param.level);
                             });
 
                         });
@@ -172,20 +175,23 @@
                         console.log("Error: " + jqXHR.status);
                     }
                 });
-            } else {
+            }
+            else {
                 layui.use(['dtree'], function () {
                     var dtree = layui.dtree;
                     dtree.renderSelect({
                         elem: "#ParentId",
-                        url: "/Home/GetRole_authorization",
+                        url: "/Home/GetMenuBysystem",
                         done: function () {
                         }
                     });
                 });
             }
+
         })
 
         function Sava() {
+            var IsMenu= $("input[name='IsMenu']:checked").val();
             if ($("#ParentId").val().trim() == '') {
                 Mmsg('父节点为必填项！');
                 return false;
@@ -194,7 +200,7 @@
                 Mmsg('菜单名称为必填项！');
                 return false;
             }
-            if ($("#LinkAddress").val().trim() == '') {
+            if ($("#LinkAddress").val().trim() == '' && IsMenu == "0") {
                 Mmsg('链接地址为必填项！');
                 return false;
             }
@@ -202,8 +208,10 @@
                 Id: $("#Id").val(),
                 Name: $("#Name").val().trim(),
                 ParentId: $("#ParentId").val(),
+                MenuType: $("#level").val(),
                 LinkAddress: $("#LinkAddress").val(),
-                 Icon: $("#iconPicker").val()
+                Icon: $("#iconPicker").val(),
+                IsMenu: IsMenu
             };
             $.ajax({
                 type: "POST",

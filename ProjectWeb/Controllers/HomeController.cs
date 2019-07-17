@@ -38,12 +38,6 @@ namespace ProjectWeb.Controllers
             return View();
         }
         [HttpPost]
-        public JsonResult GettbMenuByhwhere(Dictionary<string, string> data)
-        {
-            IList<tbMenu> list = tbMenuBusiness.GettbMenuByhwhere(data);
-            return Json(list);
-        }
-        [HttpPost]
         public JsonResult GetMenuList(Dictionary<string, string> data, int page, int limit)
         {
             Dictionary<string, object> info = new Dictionary<string, object>();
@@ -61,6 +55,13 @@ namespace ProjectWeb.Controllers
                 throw;
             }
             return Json(info);
+        }
+        [HttpPost]
+        public JsonResult GetMenuBysystem()
+        {
+            string RoleId = Request.Query["RoleId"];
+            Dictionary<string, object> InfoList = tbMenuBusiness.GetMenuBysystem("939");
+            return Json(InfoList);
         }
         [HttpPost]
         public JsonResult SavaMenu(Dictionary<string, string> data)

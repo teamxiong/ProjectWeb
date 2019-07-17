@@ -23,81 +23,37 @@ namespace ProjectWebBusiness
             InfoTreeNode.ParentId =0;
             InfoTreeNode.MenuType= -1;
             InfoTreeNode.child =new List<Tree>();
-            GetTreeNode(List, InfoTreeNode);
-            Dictionary<string, object> a = new Dictionary<string, object>();
-            a.Add("menuInfo", InfoTreeNode.child);
-            return a;
+            Tree.GetTreeNode(List, InfoTreeNode);
+            Dictionary<string, object> result = new Dictionary<string, object>();
+            result.Add("menuInfo", InfoTreeNode.child);
+            return result;
         }
-        public class Tree
+        public static Dictionary<string, object> GetMenuBysystem(string UserId)
         {
-            public string id { get; set; }
-            public string title { get; set; }
-            public string icon { get; set; }
-            public string href { get; set; }
-            public int MenuType { get; set; }
-            public string target { get; set; }
-            public List<Tree> child { get; set; }
-            public int ParentId { get; set; }
-            public Tree() {
-                if (child == null)
-                    child = new List<Tree>();
-            }
+            tbRoleICoreService da = new tbRoleDAL();
+            List<tbMenu> List = da.GetRole_authorization("90");
+            dtree InfoTreeNode = new dtree();
+            InfoTreeNode.id = "0";
+            InfoTreeNode.parentId = "0";
+            InfoTreeNode.dataType = "-1";
+            InfoTreeNode.title = "根节点";
+            InfoTreeNode.checkArr = new dtree.checkArrInfo() { Checked = "0" };
+            dtree.GetdtreeNode(List, InfoTreeNode);
+            Dictionary<string, object> status = new Dictionary<string, object>();
+            status.Add("code", 200);
+            status.Add("message", "操作成功");
+            Dictionary<string, object> result = new Dictionary<string, object>();
+            result.Add("status", status);
+            result.Add("data", InfoTreeNode);
+            return result;
         }
-        public static void GetTreeNode(IList<tbMenu> lstPlace, Tree InfoTreeNode)
-        {
-            try
-            {
-                if (InfoTreeNode == null)
-                {
-                    InfoTreeNode = new Tree();
-                }
-                int chilCareType = 1;
-                chilCareType = Convert.ToInt16(InfoTreeNode.MenuType) + 1;
-                foreach (tbMenu s in lstPlace)
-                {
-                    if (s.ParentId != Convert.ToInt32(InfoTreeNode.id) || s.MenuType != chilCareType)
-                    {
-                        continue;
-                    }
 
-                    Tree _info = new Tree();
-                    _info.id = s.Id.ToString();
-                    _info.title = s.Name.ToString();
-                    _info.MenuType = s.MenuType;
-                    _info.href = s.LinkAddress;
-                    _info.icon = s.Icon.ToString();
-                    _info.target = "_self";
-                    _info.ParentId = s.ParentId;
-                    
-                    GetTreeNode(lstPlace, _info);
-                    InfoTreeNode.child.Add(_info);
-                }
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-        }
 
         public static List<tbMenu> GettbMenuList(int StartPage, int PageSize, Dictionary<string, string> data,ref int totalNumber)
         {
             return dal.GettbMenuList(StartPage, PageSize, data, ref totalNumber); 
         }
-        public static IList<tbMenu> GettbMenuByhwhere(Dictionary<string,string> dict)
-        {
-            StringBuilder where = new StringBuilder();
-            if (dict.ContainsKey("MenuType"))
-            {
-                where.Append(" AND MenuType='"+ dict["MenuType"] + "' ");
-            }
-            if (dict.ContainsKey("Id"))
-            {
-                where.Append(" AND Id='" + dict["Id"] + "' ");
-            }
-            IList<tbMenu> List = dal.GettbMenuByhwhere(where.ToString());
-            return List;
-        }
+
         public  static ResultInfo AddMenu(Dictionary<string,string> data)
         {
             ResultInfo resInfo = new ResultInfo();
@@ -106,12 +62,13 @@ namespace ProjectWebBusiness
                 tbMenu Info = new tbMenu
                 {
                     Name = data["Name"],
-                    MenuType = 0,
                     ParentId = Convert.ToInt32(data["ParentId"]),
                     Icon = data["Icon"],
+                    MenuType = Convert.ToInt32(data["MenuType"]) +1,
                     LinkAddress = data["LinkAddress"],
-                    IsEnable = "1"
-                };
+                    IsEnable = "1",
+                  IsMenu = data["IsMenu"]
+            };
                 resInfo.res = dal.AddMenu(Info);
             }
             catch (Exception ex)
@@ -131,8 +88,10 @@ namespace ProjectWebBusiness
                 Info.Name = data["Name"];
                 Info.ParentId = Convert.ToInt32(data["ParentId"]);
                 Info.Icon = data["Icon"];
+                Info.MenuType = Convert.ToInt32(data["MenuType"]) + 1;
                 Info.LinkAddress = data["LinkAddress"];
                 Info.IsEnable = "1";
+                Info.IsMenu = data["IsMenu"];
                 resInfo.res = dal.UpMenu(Info);
             }
             catch (Exception ex)
