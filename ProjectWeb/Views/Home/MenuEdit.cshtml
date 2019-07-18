@@ -147,12 +147,13 @@
                         $("#Name").val(Info.name);
                         $("#LinkAddress").val(Info.linkAddress);
                         $("#iconPicker").val(Info.icon);
-                        $("input:radio[value='" + Info.isMenu+"']").attr('checked', 'true');
+                        $("input:radio[value='" + Info.isMenu + "']").attr('checked', 'true');
+                        $("#level").val(Info.menuType);
                         layui.use(['dtree'], function () {
                             var dtree = layui.dtree;
                             dtree.renderSelect({
                                 elem: "#ParentId",
-                                url: "/Home/GetRole_authorization",
+                                url: "/Home/GetMenuBysystem",
                                 done: function () {
                                     dtree.dataInit("ParentId", Info.parentId);
                                     dtree.setSelectValue("ParentId");

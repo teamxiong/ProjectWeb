@@ -9,11 +9,11 @@ using ProjectWebModel;
 
 namespace ProjectWeb.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
 
         public IActionResult Index()
-        { 
+        {
             return View();
         }
         [HttpPost]
@@ -22,15 +22,16 @@ namespace ProjectWeb.Controllers
             Dictionary<string, object> dict = tbMenuBusiness.GettbMenuBysystem("939");
             return Json(dict);
         }
-        public IActionResult OutLogin()
+        public IActionResult OutLogin(object obj)
         {
         
-            Response.Redirect("/Account/Login");
+            //Response.Redirect("/Account/Login");
             return View();
         }
         #region Menu
         public IActionResult MenuMain()
         {
+            Convert.ToInt32("xxx");
             return View();
         }
         public IActionResult MenuEdit()
