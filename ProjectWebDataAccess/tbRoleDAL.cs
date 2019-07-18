@@ -39,12 +39,29 @@ namespace ProjectWebDataAccess
                 }).ToPageList(StartPage, PageSize, ref totalNumber);
             return RoleLis;
         }
-        public IList<tbRole> GettbRoleByhwhere(string where)
+        public List<tbRole> GetUser_authorization(int StartPage, int PageSize, Dictionary<string, string> data, ref int totalNumber)
         {
-            IList<tbRole> List = new List<tbRole>();
-            DataTable dt = SqlHelper.GetDataTable(SqlHelper.ConnectionString(), CommandType.Text, string.Format("select * from tbRole where 1=1 {0} ", where), null);
-            List = SqlHelper.ConvertTo<tbRole>(dt);
-            return List;
+            var UserRoles = Db.Queryable<tbRole, tbUserRole>((t, tr) => new object[] {
+                JoinType.Inner,t.Id==tr.RoleId
+            }).Where((t,tr)=>tr.UserId==Convert.ToInt32(data["UserId"])).ToList();
+            var tbRoleTable = Db.Queryable<tbRole>();
+            if (data.ContainsKey("Name") && !string.IsNullOrEmpty(data["Name"]))
+            {
+                tbRoleTable.Where(it => it.RoleName == data["Name"]);
+            }
+            var tbRoleList = tbRoleTable.Clone().ToPageList(StartPage, PageSize, ref totalNumber);
+            var Role_authorization = (from b in tbRoleList
+                                      join a in UserRoles on b.Id equals a.Id into a_join
+                                      from x in a_join.DefaultIfEmpty()
+                                      select new tbRole
+                                      {
+                                          Id = b.Id,
+                                          RoleName = b.RoleName,
+                                          CreateTime = b.CreateTime,
+                                          Description = b.Description,
+                                          LAY_CHECKED = x == null ? false :true
+                                      }).ToList();
+            return Role_authorization;
         }
         public bool AddtbRole(tbRole Info)
         {
@@ -61,20 +78,28 @@ namespace ProjectWebDataAccess
 
         public List<tbMenu> GetRole_authorization(string RoleId)
         {
-            List<tbMenu> InfoList = new List<tbMenu>();
-            if (RoleId=="90")
-            {
-                InfoList = Db.Queryable<tbMenu>().ToList();
-            }
-            else
-            {
-                var List1 = Db.Queryable<tbMenu, tbRoleMenu, tbRole>((t, tr, tb) => new object[] {
+            var InfoList = Db.Queryable<tbMenu, tbRoleMenu, tbRole>((t, tr, tb) => new object[] {
                 JoinType.Inner,t.Id==tr.MenuId,
                 JoinType.Inner,tr.RoleId==tb.Id
-}).Where((t, tr, tb) => tb.Id == Convert.ToInt32(RoleId));
-                InfoList.AddRange(List1.Clone().ToList());
-            }
-            return InfoList;
+                }).Where((t, tr, tb) => tb.Id == Convert.ToInt32(RoleId)).ToList();
+
+            var MenuList = Db.Queryable<tbMenu>().ToList();
+
+            var Role_authorization = (from b in MenuList
+                                      join a in InfoList on b.Id equals a.Id into a_join
+                                      from x in a_join.DefaultIfEmpty()
+                                      select new tbMenu
+                                      {
+                                          Id = b.Id,
+                                          Icon = b.Icon,
+                                          IsMenu = b.IsMenu,
+                                          LinkAddress = b.LinkAddress,
+                                          MenuType = b.MenuType,
+                                          Name = b.Name,
+                                          ParentId = b.ParentId,
+                                          IsEnable = x == null ? "0" : "1"
+                                      }).ToList();
+            return Role_authorization;
         }
         public ResultInfo Role_authorization(int RoleId, List<tbRoleMenu> InfoList)
         {

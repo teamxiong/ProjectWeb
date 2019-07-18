@@ -216,10 +216,23 @@ namespace ProjectWeb.Controllers
             return Json(info);
         }
         [HttpPost]
-        public JsonResult GettbRoleByhwhere(Dictionary<string, string> data)
+        public JsonResult GetUser_authorization(Dictionary<string, string> data, int page, int limit)
         {
-            IList<tbRole> list = tbRoleBusiness.GettbRoleByhwhere(data);
-            return Json(list);
+            Dictionary<string, object> info = new Dictionary<string, object>();
+            try
+            {
+                int totalNumber = 0;
+                List<tbRole> RoleList = tbRoleBusiness.GetUser_authorization(page, limit, data, ref totalNumber);
+                info.Add("status", 200);
+                info.Add("message", "");
+                info.Add("total", totalNumber);
+                info.Add("rows", RoleList);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return Json(info);
         }
 
         [HttpPost]
@@ -256,7 +269,7 @@ namespace ProjectWeb.Controllers
         public JsonResult GetRole_authorization()
         {
             string RoleId = Request.Query["RoleId"];
-            Dictionary<string, object> Role_authorization = tbRoleBusiness.GetRole_authorization("90");
+            Dictionary<string, object> Role_authorization = tbRoleBusiness.GetRole_authorization(RoleId);
             return Json(Role_authorization);
         }
         [HttpPost]

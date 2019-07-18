@@ -44,13 +44,13 @@
         </div>
         <div class="layui-col-xs1">&nbsp;</div>
     </div>
-    <div class="layui-row">
+    <div class="layui-row LinkAddressDiv">
         <div class="layui-col-xs1">&nbsp;</div>
         <div class="layui-col-xs10">
             <div class="layui-form-item">
                 <label class="layui-form-label">链接地址</label>
                 <div class="layui-input-block">
-                    <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入链接地址" class="layui-input" id="LinkAddress" >
+                    <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入链接地址" class="layui-input" id="LinkAddress">
                 </div>
             </div>
         </div>
@@ -102,10 +102,10 @@
                 form.on('radio', function (data) {
                     console.log(data.value); //被点击的radio的value值
                     if (data.value == 0) {
-                        $("#LinkAddress").attr("readonly", false);
+                        $(".LinkAddressDiv").css("display", "");
                     } else {
-                        $("#LinkAddress").val('');
-                        $("#LinkAddress").attr("readonly", true);
+                        $(".LinkAddress").val('');
+                        $(".LinkAddressDiv").css("display", "none");
                     }
                 });
              
@@ -184,6 +184,10 @@
                         url: "/Home/GetMenuBysystem",
                         done: function () {
                         }
+                    });
+                    dtree.on("node('ParentId')", function (obj) {
+                        $("#ParentId").val(obj.param.nodeId);
+                        $("#level").val(obj.param.level);
                     });
                 });
             }

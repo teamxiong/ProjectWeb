@@ -30,14 +30,9 @@ namespace ProjectWebBusiness
           
             return RoleList;
         }
-        public static IList<tbRole> GettbRoleByhwhere(Dictionary<string, string> dict)
+        public static List<tbRole> GetUser_authorization(int StartPage, int PageSize, Dictionary<string, string> data, ref int totalNumber)
         {
-            StringBuilder where = new StringBuilder();
-            if (dict.ContainsKey("Id"))
-            {
-                where.Append(" AND Id='" + dict["Id"] + "' ");
-            }
-            IList<tbRole> List = dal.GettbRoleByhwhere(where.ToString());
+            List<tbRole> List = dal.GetUser_authorization(StartPage, PageSize, data, ref totalNumber);
             return List;
         }
         public static ResultInfo AddtbRole(Dictionary<string, string> data)
@@ -102,7 +97,7 @@ namespace ProjectWebBusiness
             dtree InfoTreeNode = new dtree();
             InfoTreeNode.id = "0";
             InfoTreeNode.parentId ="0";
-            InfoTreeNode.dataType = "-1";
+            InfoTreeNode.dataType = "0";
             InfoTreeNode.checkArr = new dtree.checkArrInfo() { Checked = "0" };
             InfoTreeNode.children = new List<dtree>();
             dtree.GetdtreeNode(List, InfoTreeNode);

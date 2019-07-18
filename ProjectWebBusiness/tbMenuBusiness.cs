@@ -21,7 +21,7 @@ namespace ProjectWebBusiness
             Tree InfoTreeNode = new Tree();
             InfoTreeNode.id = "0";
             InfoTreeNode.ParentId =0;
-            InfoTreeNode.MenuType= -1;
+            InfoTreeNode.MenuType= 0;
             InfoTreeNode.child =new List<Tree>();
             Tree.GetTreeNode(List, InfoTreeNode);
             Dictionary<string, object> result = new Dictionary<string, object>();
@@ -32,10 +32,11 @@ namespace ProjectWebBusiness
         {
             tbRoleICoreService da = new tbRoleDAL();
             List<tbMenu> List = da.GetRole_authorization("90");
+            List<dtree> InfoTreeNodeList = new List<dtree>();
             dtree InfoTreeNode = new dtree();
             InfoTreeNode.id = "0";
             InfoTreeNode.parentId = "0";
-            InfoTreeNode.dataType = "-1";
+            InfoTreeNode.dataType = "0";
             InfoTreeNode.title = "根节点";
             InfoTreeNode.checkArr = new dtree.checkArrInfo() { Checked = "0" };
             dtree.GetdtreeNode(List, InfoTreeNode);
@@ -43,8 +44,9 @@ namespace ProjectWebBusiness
             status.Add("code", 200);
             status.Add("message", "操作成功");
             Dictionary<string, object> result = new Dictionary<string, object>();
+            InfoTreeNodeList.Add(InfoTreeNode);
             result.Add("status", status);
-            result.Add("data", InfoTreeNode);
+            result.Add("data", InfoTreeNodeList);
             return result;
         }
 
@@ -64,7 +66,7 @@ namespace ProjectWebBusiness
                     Name = data["Name"],
                     ParentId = Convert.ToInt32(data["ParentId"]),
                     Icon = data["Icon"],
-                    MenuType = Convert.ToInt32(data["MenuType"]) +1,
+                    MenuType = Convert.ToInt32(data["MenuType"]),
                     LinkAddress = data["LinkAddress"],
                     IsEnable = "1",
                   IsMenu = data["IsMenu"]
@@ -88,7 +90,7 @@ namespace ProjectWebBusiness
                 Info.Name = data["Name"];
                 Info.ParentId = Convert.ToInt32(data["ParentId"]);
                 Info.Icon = data["Icon"];
-                Info.MenuType = Convert.ToInt32(data["MenuType"]) + 1;
+                Info.MenuType = Convert.ToInt32(data["MenuType"]);
                 Info.LinkAddress = data["LinkAddress"];
                 Info.IsEnable = "1";
                 Info.IsMenu = data["IsMenu"];

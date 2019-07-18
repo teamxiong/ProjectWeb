@@ -43,7 +43,7 @@ namespace ProjectWebModel
                     _info.title = s.Name.ToString();
                     _info.parentId = s.ParentId.ToString();
                     _info.dataType = s.MenuType.ToString();
-                    _info.checkArr = new dtree.checkArrInfo() { Checked = "0" };
+                    _info.checkArr = new dtree.checkArrInfo() { Checked =s.IsEnable};
                     GetdtreeNode(lstPlace, _info);
                     InfoTreeNode.children.Add(_info);
                 }

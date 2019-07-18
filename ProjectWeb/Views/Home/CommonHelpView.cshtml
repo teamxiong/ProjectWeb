@@ -18,8 +18,8 @@
 </div>
 
 @section scripts{
-<script src="~/Content/js/CommonHelp.js?12"></script>
-<script type="text/javascript">
+    <script src="~/js/CommonHelp.js?4"></script>
+    <script type="text/javascript">
 
         var callbackdata = function () {
             var table = layui.table;
@@ -33,7 +33,7 @@
             var Url = GetQueryString("Url");
             var dataStr = decodeURI(GetQueryString("data"));
             var data = JSON.parse(dataStr);
-            $("#name").html(data.title+"：");
+            $("#name").html(data.title + "：");
             data.text = "";
             layui.use('table', function () {
                 var table = layui.table, form = layui.form;
@@ -41,30 +41,30 @@
                     id: "testReload",
                     method: "post",
                     elem: '#table'
-                  , url: Url
-                   , limits: [10, 50, 100, 500, 800, 1000]
-                  , cols: [Getcols(Type)]
+                    , url: Url
+                    , limits: [10, 50, 100, 500, 800, 1000]
+                    , cols: [Getcols(Type)]
                     , done: function (res, page, count) {
                         console.log(res, page, count);
                         //可以自行添加判断的条件是否选中
                         //这句才是真正选中，通过设置关键字LAY_CHECKED为true选中，这里只对第一行选中
                         Getdone(Type, res);
                     }
-                    ,where: {
+                    , where: {
                         data: data
                     }
-                  , page: true
-                  , response: {
-                      statusCode: 200 //重新规定成功的状态码为 200，table 组件默认为 0
-                  }
-                  , parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
-                      return {
-                          "code": res.status, //解析接口状态
-                          "msg": res.message, //解析提示文本
-                          "count": res.total, //解析数据长度
-                          "data": res.rows //解析数据列表
-                      };
-                  }
+                    , page: true
+                    , response: {
+                        statusCode: 200 //重新规定成功的状态码为 200，table 组件默认为 0
+                    }
+                    , parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
+                        return {
+                            "code": res.status, //解析接口状态
+                            "msg": res.message, //解析提示文本
+                            "count": res.total, //解析数据长度
+                            "data": res.rows //解析数据列表
+                        };
+                    }
                 });
                 var $ = layui.$, active = {
                     reload: function () {
@@ -75,9 +75,9 @@
                             page: {
                                 curr: 1 //重新从第 1 页开始
                             }
-                          , where: {
-                              data: { "text": demoReload.val() }
-                          }
+                            , where: {
+                                data: { "text": demoReload.val() }
+                            }
                         });
                     }
                 };
@@ -89,6 +89,6 @@
             });
 
         })
-</script>
+    </script>
 }
 

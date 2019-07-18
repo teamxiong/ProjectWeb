@@ -211,7 +211,7 @@
                                 shade: 0.8,
                                 maxmin: false, //开启最大化最小化按钮
                                 area: ['60%', '80%'],
-                                content: "/Home/CommonHelpView?Type=User_authorization_Roles&Url=/Home/GettbRoleList&data=" + datastr,
+                                content: "/Home/CommonHelpView?Type=User_authorization_Roles&Url=/Home/GetUser_authorization&data=" + datastr,
                                 btn: ['确定', '关闭'],
                                 yes: function (index) {
                                     var res = window["layui-layer-iframe" + index].callbackdata();
@@ -219,7 +219,7 @@
                                         Mmsg("未选择任何数据！");
                                         return false;
                                     }
-                                    if (res.length > 1) {
+                                    if (res.length!= 1) {
                                         Mmsg("只能选择一个角色！");
                                         return false;
                                     }

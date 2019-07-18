@@ -51,7 +51,14 @@ namespace ProjectWebDataAccess
         }
         public bool AddMenu(tbMenu Info)
         {
-            var result = CurrentDb.AsInsertable(Info).ExecuteCommand();
+
+            int MenuId = CurrentDb.AsInsertable(Info).ExecuteReturnIdentity();
+            tbRoleMenu SysUserRole = new tbRoleMenu()
+            {
+                MenuId = MenuId,
+                 RoleId=90
+            };
+            var result = Db.Insertable<tbRoleMenu>(SysUserRole).ExecuteCommand();
             return result>0;
         }
         public bool UpMenu(tbMenu Info)
@@ -60,7 +67,13 @@ namespace ProjectWebDataAccess
         }
         public bool DeMenu(string Id)
         {
-            return CurrentDb.DeleteByIds(Id.Split(','));
+            var result = Db.Ado.UseTran(() =>
+            {
+                CurrentDb.DeleteByIds(Id.Split(','));
+                Db.Deleteable<tbMenu>().In(i => i.ParentId, Id.Split(',')).ExecuteCommand();
+                Db.Deleteable<tbRoleMenu>().In(i => i.MenuId, Id.Split(',')).ExecuteCommand();
+            });
+            return result.IsSuccess;
         }
     }
 }

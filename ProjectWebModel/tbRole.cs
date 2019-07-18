@@ -49,5 +49,8 @@ namespace ProjectWebModel
         /// UpdateTime
         /// </summary>		
         public DateTime UpdateTime { get; set; }
+        public string IsEnable { get; set; }
+        [SugarColumn(IsIgnore = true)]
+        public bool LAY_CHECKED { get; set; }
     }
 }

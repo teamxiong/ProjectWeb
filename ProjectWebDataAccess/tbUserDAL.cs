@@ -52,23 +52,23 @@ namespace ProjectWebDataAccess
         {
             return Db.Updateable(new tbUser() { Id = Convert.ToInt32(Id) }).UpdateColumns(it => new { it.Password }).ReSetValue(it => it.Password == Password).ExecuteCommand() > 0;
         }
-        public Dictionary<string, object> User_authorization_Roles(int StartPage, int PageSize, string Filter)
-        {
-            Dictionary<string, object> ResultJson = new Dictionary<string, object>();
-            //String TableName = " tbUser ";
-            //String Fields = " * ";
-            //string order = " Id ";
-            //ResultJson = Common.GetResultJsontwo(TableName, Fields, StartPage, PageSize, Filter, order);
-            return ResultJson;
-        }
 
         public ResultInfo User_authorization_Roles(string UserId, string RoleId)
         {
             ResultInfo resuit = new ResultInfo();
             try
             {
-                string sql = string.Format(" delete  tbUserRole where UserId='{0}' insert tbUserRole values('{0}','{1}')", UserId, RoleId);
-                if (SqlHelper.ExecuteNonQuery(SqlHelper.ConnectionString(), CommandType.Text, sql, null) > 0)
+                tbUserRole Info = new tbUserRole()
+                {
+                    RoleId = Convert.ToInt32(RoleId),
+                    UserId = Convert.ToInt32(UserId)
+                };
+                var res = Db.Ado.UseTran(() =>
+                {
+                    Db.Deleteable<tbUserRole>().Where(i => i.UserId == Convert.ToInt32(UserId)).ExecuteCommand();
+                    Db.Insertable<tbUserRole>(Info).ExecuteCommand();
+                });
+                if (res.IsSuccess)
                 {
                     resuit.res = true;
                 }

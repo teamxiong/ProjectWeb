@@ -11,7 +11,7 @@ namespace ProjectWebICoreService
     {
         List<tbRole> GettbRoleList(int StartPage, int PageSize, Dictionary<string, string> data, ref int totalNumber);
         List<tbRole> GettbRoleLisByUsert(int StartPage, int PageSize, string UserId, ref int totalNumber);
-        IList<tbRole> GettbRoleByhwhere(string where);
+        List<tbRole> GetUser_authorization(int StartPage, int PageSize, Dictionary<string, string> data, ref int totalNumber);
         bool AddtbRole(tbRole Info);
         bool UptbRole(tbRole Info);
         bool DetbRole(string Id);

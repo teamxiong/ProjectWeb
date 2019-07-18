@@ -73,7 +73,17 @@
                         { type: 'checkbox', fixed: 'left' },
                         { field: 'name', title: '菜单名称	' },
                         { field: 'linkAddress', title: '链接地址' },
-                          { field: 'icon', title: '图标', templet: '#Icon' }
+                        { field: 'icon', title: '图标', templet: '#Icon' },
+                        {
+                            field: 'IsEnable', title: '类型', templet: function (d)
+                            {
+                                if (d.isMenu == 0) {
+                                    return '<span class="layui-badge layui-bg-blue">菜单</span>';
+                                } else {
+                                    return '<span class="layui-badge layui-bg-green">按钮</span>';
+                                }
+                            }
+                        }
                     ]],
                     done: function () {
                         layer.closeAll('loading');
@@ -233,217 +243,6 @@
             });
         });
     </script>
-    @*<script type="text/javascript">
-
-            $(function () {
-                layui.use('table', function () {
-                    var table = layui.table, form = layui.form;
-                    table.render({
-                        id: "testReload",
-                        method: "post",
-                        elem: '#table'
-                      , url: '/Home/GetMenuList'
-                      , toolbar: '#toolbarDemo'
-                      , limits: [20, 50, 100, 500, 800, 1000]
-                      , title: '数据'
-                      , cols: [[
-                                {type: 'checkbox', fixed: 'left'},
-                                { field: 'name', title: '菜单名称	' },
-                               { field: 'linkAddress', title: '链接地址'},
-                                { field: 'icon', title: '图标', templet: '#Icon' }
-                      ]], where: {
-                          data: Getdata()
-                      }
-                      , page: true
-                      , response: {
-                          statusCode: 200 //重新规定成功的状态码为 200，table 组件默认为 0
-
-                      }
-                        , parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
-                            console.log(res);
-                          return {
-                              "code": res.status, //解析接口状态
-                              "msg": res.message, //解析提示文本
-                              "count": res.total, //解析数据长度
-                              "data": res.rows //解析数据列表
-                          };
-                      }
-                    });
-                    //监听锁定操作
-                    form.on('checkbox(lockDemo)', function (obj) {
-                        layer.tips("")
-                        //  layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
-                    });
-
-                    var $ = layui.$, active = {
-                        reload: function () {
-
-                            //执行重载
-                            table.reload('testReload', {
-                                page: {
-                                    curr: 1 //重新从第 1 页开始
-                                }
-                              , where: {
-                                  data:Getdata()
-                              }
-                            });
-                        }
-                    };
-
-                    $('#reload').on('click', function () {
-                        var type = $(this).data('type');
-                        active[type] ? active[type].call(this) : '';
-                    });
-
-                    //头工具栏事件
-                    table.on('toolbar(test)', function (obj) {
-                        var checkStatus = table.checkStatus(obj.config.id);
-                        switch (obj.event) {
-                            case 'Add':
-                                OpenFrom('reload', '新增', '/Home/MenuEdit?state=Add', '40%', '70%');
-                                break;
-                            case 'edit':
-                                var data = checkStatus.data;
-                                if (data.length < 1) {
-                                    Mmsg("未选择任何数据！");
-                                    return false;
-                                }
-                                if (data.length > 1) {
-                                    Mmsg("每次只能修改一条数据！");
-                                    return false;
-                                }
-                                console.log(data);
-                                OpenFrom('reload', '编辑', '/Home/MenuEdit?state=Edit&Id=' + data[0].id + '', '40%', '80%');
-                                break;
-                            case 'reload':
-
-                                $('#reload').click();
-                                break;
-                            case 'Delete':
-                                var data = checkStatus.data;
-                                if (data.length < 1) {
-                                    Mmsg("未选择任何数据！");
-                                    return false;
-                                }
-                                var Idstr = "";
-                                for (var i = 0; i < checkStatus.data.length; i++) {
-                                    Idstr += "" + checkStatus.data[i].id + ",";
-                                }
-                                Idstr = Idstr.substring(0, Idstr.length - 1);
-                                layer.confirm('确认删除？', {
-                                    btn: ['确认', '取消'],
-                                    offset: '200px'
-                                }, function (index) {
-                                    layer.close(index);
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "/Home/SavaMenu?state=Delete",
-                                        data: { data: { Id: Idstr } },
-                                        success: function (resInfo) {
-                                            if (resInfo.res) {
-                                                Mmsg("删除成功 !");
-                                                $("#reload").click();
-                                            } else {
-                                                Mmsg("删除失败:" + resInfo.info + " !");
-                                            }
-                                        },
-                                        error: function (jqXHR) {
-                                            Mmsg("系统繁忙 !");
-                                            console.log("Error: " + jqXHR.status);
-                                        }
-                                    });
-                                });
-                                break;
-                            case "setmenubutton":
-                                var data = checkStatus.data;
-                                if (data.length < 1) {
-                                    Mmsg("未选择任何数据！");
-                                    return false;
-                                }
-                                if (data.length > 1) {
-                                    Mmsg("每次只能选择一条数据！");
-                                    return false;
-                                }
-                                var MenuId = data[0].id;
-                                var data = {
-                                    title: '按钮名称',
-                                    MenuId: MenuId
-                                };
-                                var datastr = JSON.stringify(data);
-                                datastr = encodeURI(datastr);
-                                layer.open({
-                                    type: 2,
-                                    title: "分配按钮",
-                                    shadeClose: false,
-                                    shade: 0.8,
-                                    maxmin: false, //开启最大化最小化按钮
-                                    area: ['60%', '80%'],
-                                    content: "/Home/CommonHelpView?Type=setmenubutton&Url=/Home/GettbButtonByMenuIdList&data=" + datastr,
-                                    btn: ['确定', '关闭'],
-                                    yes: function (index) {
-                                        var res = window["layui-layer-iframe" + index].callbackdata();
-                                        if (res.length < 1) {
-                                            Mmsg("未选择任何数据！");
-                                            return false;
-                                        }
-                                        var ButtonIdstr = "";
-                                        for (var i = 0; i < res.length; i++) {
-                                            ButtonIdstr += res[i].Id + ','
-                                        }
-                                        ButtonIdstr = ButtonIdstr.substring(0, ButtonIdstr.length-1);
-                                        console.log(res);
-                                        var data = {
-                                            ButtonIdstr: ButtonIdstr,
-                                            MenuId: MenuId
-                                        };
-                                        var ok = false;
-                                        $.ajax({
-                                            type: "POST",
-                                            url: "/Home/SavatbMenuButton",
-                                            data: data,
-                                            async: false,
-                                            success: function (resInfo) {
-                                                console.log(resInfo);
-                                                if (resInfo.res) {
-                                                    Mmsg("分配成功 !");
-                                                    ok = true;
-                                                } else {
-                                                    Mmsg("分配失败:" + resInfo.info + " !");
-                                                    ok = false;
-                                                }
-                                            },
-                                            error: function (jqXHR) {
-                                                Mmsg("系统繁忙 !");
-                                                console.log("Error: " + jqXHR.status);
-                                            }
-                                        });
-                                        if (!ok) {
-                                            return false
-                                        }
-                                        layer.close(index);
-                                        return;
-                                    },
-                                    end: function (e) {
-                                    }
-                                });
-                                break;
-                        };
-                    });
-
-                });
-            });
-
-
-            function Getdata() {
-                var data = {
-                    Name: $("#Name").val().trim(),
-                    LinkAddress: $("#LinkAddress").val().trim(),
-                    MenuType: $("#MenuType").val()
-                };
-                return data;
-            }
-        </script>
-    *@
     <script type="text/html" id="Icon">
         {{#  if(d.icon=== ''){ }}
         <span style="color: #F581B1;"></span>
@@ -464,9 +263,9 @@
         <button class="layui-btn" id="edit" data-type="edit" lay-event="Delete">
             <i class="layui-icon">&#xe615;</i> 删除
         </button>
-        <button class="layui-btn" id="edit" data-type="edit" lay-event="setmenubutton">
+        @*<button class="layui-btn" id="edit" data-type="edit" lay-event="setmenubutton">
             <i class="layui-icon">&#xe615;</i> 分配按钮
-        </button>
+        </button>*@
     </script>
 }
 

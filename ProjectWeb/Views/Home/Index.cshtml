@@ -40,11 +40,11 @@
             {{each child}}
             <dl class="layui-nav-child">
                 <dd data-name="grid">
-                    <a href="javascript:;"><i class="layui-icon layui-icon-home"> {{= $value.title}}</i> </a>
+                    <a href="javascript:;"><i class="layui-icon {{= $value.icon}}"> {{= $value.title}}</i> </a>
                     {{if $value.child.length>0}}
                     {{each $value.child}}
                     <dl class="layui-nav-child">
-                        <dd data-name="list"><a lay-href="{{= $value.href}}"><i class="layui-icon layui-icon-home"> {{= $value.title}}</i></a></dd>
+                        <dd data-name="list"><a lay-href="{{= $value.href}}"><i class="layui-icon {{= $value.icon}}"> {{= $value.title}}</i></a></dd>
                     </dl>
                     {{/each}}
                     {{/if}}
@@ -121,8 +121,8 @@
                                 <!-- 侧边菜单 -->
                     <div class="layui-side layui-side-menu">
                                     <div class="layui-side-scroll">
-                                        <div class="layui-logo" lay-href="home/console.html">
-                                            <span>layuiAdmin</span>
+                                        <div class="layui-logo">
+                                            <span>后台系统</span>
                                         </div>
 
                                         <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu" >
