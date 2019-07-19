@@ -1,5 +1,6 @@
 ﻿using ProjectWebICoreService;
 using ProjectWebModel;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,17 +10,17 @@ using System.Text;
 using System.Threading.Tasks;
 namespace ProjectWebDataAccess
 {
-    public class tbUserDAL :DbContext<tbUser>,tbUserICoreService
+    public class tbUserDAL : DbContext<tbUser>, tbUserICoreService
     {
-        public List<tbUser> GettbUserList(Dictionary<string,string> data,int StartPage, int PageSize,ref int total)
+        public List<tbUser> GettbUserList(Dictionary<string, string> data, int StartPage, int PageSize, ref int total)
         {
             Dictionary<string, object> ResultJson = new Dictionary<string, object>();
             var queryable = CurrentDb.AsQueryable();
-            if (data.ContainsKey("AccountName") &&!string.IsNullOrEmpty(data["AccountName"]))
+            if (data.ContainsKey("AccountName") && !string.IsNullOrEmpty(data["AccountName"]))
             {
                 queryable.Where(it => it.AccountName == data["AccountName"]);
             }
-            var UserList= queryable.ToPageList(StartPage, PageSize, ref total);
+            var UserList = queryable.ToPageList(StartPage, PageSize, ref total);
             return UserList;
         }
         public IList<tbUser> GettbUserByhwhere(Dictionary<string, string> data)
@@ -30,6 +31,20 @@ namespace ProjectWebDataAccess
                 queryable.Where(it => it.Id == Convert.ToInt32(data["Id"]));
             }
             return queryable.ToList();
+        }
+        public UserSession Click_Login(string UserId, string PassWord)
+        {
+            var queryable = Db.Queryable<tbUser, tbUserRole>((t, tr) => new object[] {
+                JoinType.Left, t.Id==tr.UserId
+           }).Where((t, tr) => t.AccountName == UserId && t.Password == PassWord && t.IsAble == true).Select((t, tr) => new UserSession()
+           {
+               UserId = t.Id.ToString(),
+               Email = t.Email,
+               MobilePhone = t.MobilePhone,
+               UserName = t.RealName,
+               RoleId = tr.Id.ToString()
+           }).ToList().FirstOrDefault();
+            return queryable;
         }
         public bool AddtbUser(tbUser Info)
         {

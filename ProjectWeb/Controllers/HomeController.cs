@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectWebBusiness;
 using ProjectWebModel;
@@ -14,6 +15,12 @@ namespace ProjectWeb.Controllers
 
         public IActionResult Index()
         {
+            ViewBag.UserName = uSession.UserName;
+            return View();
+        }
+
+        public IActionResult Homepage()
+        {
             return View();
         }
         [HttpPost]
@@ -22,16 +29,15 @@ namespace ProjectWeb.Controllers
             Dictionary<string, object> dict = tbMenuBusiness.GettbMenuBysystem("939");
             return Json(dict);
         }
-        public IActionResult OutLogin(object obj)
+        public IActionResult OutLogin()
         {
-        
-            //Response.Redirect("/Account/Login");
+            HttpContext.Session.Clear();
+            HttpContext.Response.Redirect("/Account/Login");
             return View();
         }
         #region Menu
         public IActionResult MenuMain()
         {
-            Convert.ToInt32("xxx");
             return View();
         }
         public IActionResult MenuEdit()

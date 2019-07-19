@@ -108,5 +108,13 @@ namespace ProjectWebBusiness
             resInfo = dal.User_authorization_Roles(UserId, RoleId);
             return resInfo;
         }
+
+        ///用户登录
+        public static UserSession Click_Login(string UserId, string PassWord)
+        {
+            PassWord = Common.GetMD5String(PassWord);
+            UserSession Info = dal.Click_Login(UserId, PassWord);
+            return Info;
+        }
     }
 }

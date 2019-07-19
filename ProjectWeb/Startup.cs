@@ -31,50 +31,41 @@ namespace ProjectWeb
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
+            services.AddSession(opts=> {
+                int timespan = 20;
+                opts.IdleTimeout = TimeSpan.FromMinutes(timespan);
+            });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //}
-            //else
-            //{
-            // app.UseExceptionHandler("/Home/OutLogin");
-            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-            //app.UseHsts();
-            //             app.UseExceptionHandler(build =>
-            //           build.Run(async context =>
-            //{
-            //    var ex = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error;
-            //    if (ex != null)
-            //    {
-            //        string innerException = String.Empty;
-            //        while (ex.InnerException != null)
-            //        {
-            //            ex = ex.InnerException;
-            //            innerException += ex.InnerException?.Message + "\r\n" + ex.InnerException?.StackTrace + "\r\n";
-            //        }
-            //        string message = $@"【{ex.Message}】内部错误【{ex.InnerException?.Message}】";
-            //        //这里可以进行异常记录和针对异常做不同处理，我这里示例返回500
-            //        context.Response.StatusCode = 500;
-            //        context.Response.ContentType = "text/plain;charset=utf-8";
-            //        //await context.Response.WriteAsync("服务器变成蝴蝶飞走了！");
-            //         context.Response.Redirect("/Home/OutLogin");
-            //    }
-            //}
-            //             ));
-            //     //    }
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler(build =>
+                                          build.Run(async context =>
+                                                                {
+                                                                    var ex = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error;
+                                                                    if (ex != null)
+                                                                    {
+                                                                        context.Response.StatusCode = 500;
+                                                                        context.Response.ContentType = "text/plain;charset=utf-8";
+                                                                        context.Response.Redirect("/Errors/Errors500?Message=" + ex.Message);
+                                                                    }
+                                                                }
+                                                         ));
+            }
 
             app.UseJump404();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
+            app.UseSession();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

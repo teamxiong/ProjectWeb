@@ -1,0 +1,49 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/css/Login.css" rel="stylesheet" />
+    <script src="~/js/jquery-1.10.2.js"></script>
+    <script src="~/js/Login/TweenLite.min.js"></script>
+    <script src="~/js/Login/EasePack.min.js"></script>
+    <script src="~/js/Login/html5.js"></script>
+    <script src="~/js/Login/rAF.js"></script>
+    <script src="~/js/Login/Login.js"></script>
+    <script src="~/lib/layer/layer/layer.js"></script>
+</head>
+<body>
+    <div class="container Login">
+        <div class="content">
+            <div id="large-header" class="large-header">
+                <canvas id="Login-canvas"></canvas>
+                <div class="logo_box">
+                    <h3>欢迎你</h3>
+                    <form action="#" name="f" method="post">
+                        <div class="input_outer">
+                            <span class="u_user"></span>
+                            <input  id ="logname"name="logname" class="text" style="color: #FFFFFF !important" type="text" placeholder="请输入账户">
+                        </div>
+                        <div class="input_outer">
+                            <span class="us_uer"></span>
+                            <input id="logpass" name="logpass" class="text" style="color: #FFFFFF !important; position:absolute; z-index:100;" value="" type="password" placeholder="请输入密码">
+                        </div>
+                        <div class="input_outer" style="width:60%">
+                            <span class="us_valiCode"></span>
+                            <input id="vcode" name="logpass" class="text" style="color: #FFFFFF !important; position:absolute; z-index:100;width:65%;" value="" type="text" placeholder="请输入验证码">
+                            <img id="valiCode" title="数字字母混合验证码" src="/account/MixVerifyCode" alt="vcode" onclick="refreshvaliCode();" style="cursor:pointer;margin-left: 112%;" />
+                        </div>
+                        <div class="mb2"><a class="act-but submit" href="javascript:;" style="color: #FFFFFF" onclick="Click_Login();">登录</a></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

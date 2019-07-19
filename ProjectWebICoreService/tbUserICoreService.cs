@@ -9,6 +9,7 @@ namespace ProjectWebICoreService
 {
     public interface tbUserICoreService
     {
+        UserSession Click_Login(string UserId, string PassWord);
         List<tbUser> GettbUserList(Dictionary<string, string> data, int StartPage, int PageSize, ref int total);
         IList<tbUser> GettbUserByhwhere(Dictionary<string, string> data);
         bool AddtbUser(tbUser Info);
