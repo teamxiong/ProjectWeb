@@ -41,13 +41,37 @@
         function Mmsg(msg) {
             layer.msg(msg);
         }
+        function GetUserViewpower() {
+            var MenId = GetQueryString("MenId");
+            $.ajax({
+                type: "POST",
+                url: "/Common/GetUserViewpower",
+                async: false,
+                data: {
+                    MenId: MenId
+                },
+                success: function (data) {
+                    console.log(data);
+                    $("#Buttonscript").tmpl(data).appendTo('#toolbarDemo');
+                },
+                error: function (jqXHR) {
+                    console.log("Error: " + jqXHR.status);
+                }
+            });
+        }
+    </script>
+    <script id="Buttonscript" type="text/x-jquery-tmpl">
+        <button type="button" class="layui-btn layui-btn-sm" id="{{= buttonId}}" data-type="{{= buttonId}}" lay-event="{{= buttonId}}" title="{{= name}}">
+            <i class="layui-icon {{= icon}}"></i>
+        </button>
     </script>
     @RenderSection("scripts", required: false)
 </head>
 <body>
     <div>
         @RenderBody()
-
+        <div id="toolbarDemo" style="display:none;">
+        </div>
     </div>
 
 

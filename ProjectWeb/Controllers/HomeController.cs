@@ -26,7 +26,7 @@ namespace ProjectWeb.Controllers
         [HttpPost]
         public JsonResult GettbMenu()
         {
-            Dictionary<string, object> dict = tbMenuBusiness.GettbMenuBysystem("939");
+            Dictionary<string, object> dict = tbMenuBusiness.MenusAnalytical(uSession.UserMenus);
             return Json(dict);
         }
         public IActionResult OutLogin()

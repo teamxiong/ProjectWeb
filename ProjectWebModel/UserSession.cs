@@ -11,6 +11,7 @@ namespace ProjectWebModel
         public string MobilePhone { get; set; }
         public string Email { get; set; }
         public string RoleId { get; set; }
+        public List<tbMenu> UserMenus { get; set; }
 
     }
 }

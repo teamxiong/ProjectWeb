@@ -40,7 +40,11 @@
 </div>
 
 @section scripts{
-    <script>
+    <script type="text/javascript">
+        $(function () {
+            GetUserViewpower();
+        })
+
         layui.config({
             base: '/lib'
         }).extend({
@@ -75,9 +79,8 @@
                         { field: 'linkAddress', title: '链接地址' },
                         { field: 'icon', title: '图标', templet: '#Icon' },
                         {
-                            field: 'IsEnable', title: '类型', templet: function (d)
-                            {
-                                if (d.isMenu == 0) {
+                            field: 'IsEnable', title: '类型', templet: function (d) {
+                                if (d.isMenu == 1) {
                                     return '<span class="layui-badge layui-bg-blue">菜单</span>';
                                 } else {
                                     return '<span class="layui-badge layui-bg-green">按钮</span>';
@@ -111,6 +114,9 @@
             table.on('toolbar(test)', function (obj) {
                 var checkStatus = table.checkStatus(obj.config.id);
                 switch (obj.event) {
+                    case 'reload':
+                        renderTable();
+                        break;
                     case 'Add':
                         OpenFrom('reload', '新增', '/Home/MenuEdit?state=Add', '40%', '70%');
                         break;
@@ -250,22 +256,6 @@
         <i class="layui-icon {{ d.icon }}"></i>
         {{#  } }}
     </script>
-    <script type="text/html" id="toolbarDemo">
-        <button class="layui-btn" id="reload" data-type="reload" lay-event="reload">
-            <i class="layui-icon">&#xe615;</i> 搜索
-        </button>
-        <button class="layui-btn" id="Add" data-type="Add" lay-event="Add">
-            <i class="layui-icon">&#xe654;</i> 新增
-        </button>
-        <button class="layui-btn" id="edit" data-type="edit" lay-event="edit">
-            <i class="layui-icon">&#xe615;</i> 编辑
-        </button>
-        <button class="layui-btn" id="edit" data-type="edit" lay-event="Delete">
-            <i class="layui-icon">&#xe615;</i> 删除
-        </button>
-        @*<button class="layui-btn" id="edit" data-type="edit" lay-event="setmenubutton">
-            <i class="layui-icon">&#xe615;</i> 分配按钮
-        </button>*@
-    </script>
+
 }
 

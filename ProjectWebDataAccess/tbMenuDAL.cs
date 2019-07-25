@@ -13,7 +13,7 @@ namespace ProjectWebDataAccess
 {
     public class tbMenuDAL : DbContext<tbMenu>,tbMenuICoreService
     {
-        public IList<tbMenu> GettbMenu(string UserId)
+        public List<tbMenu> GettbMenu(string UserId)
         {
             var list = Db.Queryable<tbMenu, tbRoleMenu, tbRole, tbUserRole, tbUser>((t1, t2, t3, t4, t5) => new object[] {
                 JoinType.Inner,t1.Id==t2.MenuId,

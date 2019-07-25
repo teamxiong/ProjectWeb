@@ -37,13 +37,50 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">类型</label>
                 <div class="layui-input-block">
-                    <input type="radio" name="IsMenu" value="0" title="菜单" checked="">
-                    <input type="radio" name="IsMenu" value="1" title="按钮">
+                    <input type="radio" name="IsMenu" value="1" title="菜单" checked="">
+                    <input type="radio" name="IsMenu" value="0" title="按钮">
                 </div>
             </div>
         </div>
         <div class="layui-col-xs1">&nbsp;</div>
     </div>
+    <div class="layui-row Buttons">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">按钮ID</label>
+                <div class="layui-input-block">
+                    <input type="text" name="ButtonId" lay-verify="ButtonId" autocomplete="off" placeholder="请输入按钮ID" class="layui-input" id="ButtonId">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row Buttons">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">按钮样式</label>
+                <div class="layui-input-block">
+                    <input type="text" name="ButtonCss" lay-verify="ButtonCss" autocomplete="off" placeholder="请输入按钮样式" class="layui-input" id="ButtonCss">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+    <div class="layui-row Buttons">
+        <div class="layui-col-xs1">&nbsp;</div>
+        <div class="layui-col-xs10">
+            <div class="layui-form-item">
+                <label class="layui-form-label">按钮事件</label>
+                <div class="layui-input-block">
+                    <input type="text" name="ButtonClick" lay-verify="ButtonClick" autocomplete="off" placeholder="请输入按钮事件" class="layui-input" id="ButtonClick">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs1">&nbsp;</div>
+    </div>
+
     <div class="layui-row LinkAddressDiv">
         <div class="layui-col-xs1">&nbsp;</div>
         <div class="layui-col-xs10">
@@ -63,7 +100,7 @@
 
                 <label for="" class="layui-form-label">选择图标</label>
                 <div class="layui-input-block">
-                    <input type="text" id="iconPicker" lay-filter="iconPicker" class="layui-input">
+                    <input type="text" id="icon" lay-filter="icon" class="layui-input">
                 </div>
             </div>
         </div>
@@ -92,38 +129,25 @@
         }).extend({
             iconPicker: '/js/iconPicker',
             dtree: '/lib/dtree/dtree/dtree'
-        });
+            });
+  
         $(function () {
 
-            layui.use(['iconPicker','form'], function () {
-                
-         
-                var iconPicker = layui.iconPicker, form = layui.form;
+            layui.use(['form'], function () {
+                var form = layui.form;
                 form.on('radio', function (data) {
                     console.log(data.value); //被点击的radio的value值
-                    if (data.value == 0) {
+                    if (data.value == 1) {
                         $(".LinkAddressDiv").css("display", "");
+                        $(".Buttons").css("display", "none");
+                        $("#ButtonId").val('');
+                        $("#ButtonCss").val('');
+                        $("#ButtonClick").val('');
+                        
                     } else {
                         $(".LinkAddress").val('');
                         $(".LinkAddressDiv").css("display", "none");
-                    }
-                });
-             
-                iconPicker.render({
-                    // 选择器，推荐使用input
-                    elem: '#iconPicker',
-                    // 数据类型：fontClass/unicode，推荐使用fontClass
-                    type: 'fontClass',
-                    // 是否开启搜索：true/false
-                    search: false,
-                    // 是否开启分页
-                    page: true,
-                    // 每页显示数量，默认12
-                    limit: 12,
-                    // 点击回调
-                    click: function (data) {
-                        console.log(data);
-                        $("#iconPicker").val(data.icon)
+                        $(".Buttons").css("display", "");
                     }
                 });
             });
@@ -146,8 +170,18 @@
                         $("#Id").val(Info.id);
                         $("#Name").val(Info.name);
                         $("#LinkAddress").val(Info.linkAddress);
-                        $("#iconPicker").val(Info.icon);
+                        $("#icon").val(Info.icon);
                         $("input:radio[value='" + Info.isMenu + "']").attr('checked', 'true');
+                        if (Info.isMenu == "1") {
+                            $(".LinkAddressDiv").css("display", "");
+                            $(".Buttons").css("display", "none");
+                        } else {
+                            $(".LinkAddressDiv").css("display", "none");
+                            $(".Buttons").css("display", "");
+                        }
+                        $("#ButtonId").val(Info.buttonId);
+                        $("#ButtonCss").val(Info.buttonCss);
+                        $("#ButtonClick").val(Info.buttonClick);
                         $("#level").val(Info.menuType);
                         layui.use(['dtree'], function () {
                             var dtree = layui.dtree;
@@ -167,9 +201,11 @@
 
                         });
                         $("#ParentId").val(Info.parentId);
+
                         layui.use(['iconPicker'], function () {
+                            iconPickerrender();
                             var iconPicker = layui.iconPicker;
-                            iconPicker.checkIcon('iconPicker', Info.icon);
+                            iconPicker.checkIcon('icon', Info.icon);
                         });
                     },
                     error: function (jqXHR) {
@@ -178,6 +214,8 @@
                 });
             }
             else {
+                $(".Buttons").css("display", "none");
+                iconPickerrender();
                 layui.use(['dtree'], function () {
                     var dtree = layui.dtree;
                     dtree.renderSelect({
@@ -195,6 +233,30 @@
 
         })
 
+        function iconPickerrender() {
+            layui.use(['iconPicker'], function () {
+
+
+                var iconPicker = layui.iconPicker;
+                iconPicker.render({
+                    // 选择器，推荐使用input
+                    elem: '#icon',
+                    // 数据类型：fontClass/unicode，推荐使用fontClass
+                    type: 'fontClass',
+                    // 是否开启搜索：true/false
+                    search: false,
+                    // 是否开启分页
+                    page: true,
+                    // 每页显示数量，默认12
+                    limit: 12,
+                    // 点击回调
+                    click: function (data) {
+                        console.log(data);
+                        $("#icon").val(data.icon)
+                    }
+                });
+            });
+        }
         function Sava() {
             var IsMenu= $("input[name='IsMenu']:checked").val();
             if ($("#ParentId").val().trim() == '') {
@@ -205,18 +267,26 @@
                 Mmsg('菜单名称为必填项！');
                 return false;
             }
-            if ($("#LinkAddress").val().trim() == '' && IsMenu == "0") {
+            if ($("#LinkAddress").val().trim() == '' && IsMenu == "1") {
                 Mmsg('链接地址为必填项！');
                 return false;
             }
+            if (IsMenu == "0" && $("#ButtonId").val().trim() == '') {
+                Mmsg('按钮ID为必填项！');
+                return false;
+            }
+
             var data = {
                 Id: $("#Id").val(),
                 Name: $("#Name").val().trim(),
                 ParentId: $("#ParentId").val(),
                 MenuType: $("#level").val(),
                 LinkAddress: $("#LinkAddress").val(),
-                Icon: $("#iconPicker").val(),
-                IsMenu: IsMenu
+                Icon: $("#icon").val(),
+                IsMenu: IsMenu,
+                ButtonId: $("#ButtonId").val().trim(),
+                ButtonCss: $("#ButtonCss").val().trim(),
+                ButtonClick: $("#ButtonClick").val().trim()
             };
             $.ajax({
                 type: "POST",

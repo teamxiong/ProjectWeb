@@ -13,10 +13,13 @@ namespace ProjectWebBusiness
    public class tbMenuBusiness
     {
         public static tbMenuICoreService dal = new tbMenuDAL();
-        public static Dictionary<string, object> GettbMenuBysystem(string UserId)
+        public static List<tbMenu> GetUserMenus(string UserId)
         {
-            List<Dictionary<string, object>> dictList = new List<Dictionary<string, object>>();
-            IList<tbMenu> List = dal.GettbMenu(UserId);
+            List<tbMenu> List = dal.GettbMenu(UserId);
+            return List;
+        }
+        public static Dictionary<string, object> MenusAnalytical(IList<tbMenu> List)
+        {
             List<Dictionary<string, object>> deicList = new List<Dictionary<string, object>>();
             Tree InfoTreeNode = new Tree();
             InfoTreeNode.id = "0";
@@ -69,8 +72,11 @@ namespace ProjectWebBusiness
                     MenuType = Convert.ToInt32(data["MenuType"]),
                     LinkAddress = data["LinkAddress"],
                     IsEnable = "1",
-                  IsMenu = data["IsMenu"]
-            };
+                    IsMenu = data["IsMenu"],
+                    ButtonId = data["ButtonId"],
+                    ButtonCss = data["ButtonCss"],
+                    ButtonClick = data["ButtonClick"]
+                };
                 resInfo.res = dal.AddMenu(Info);
             }
             catch (Exception ex)
@@ -85,15 +91,21 @@ namespace ProjectWebBusiness
             ResultInfo resInfo = new ResultInfo();
             try
             {
-                tbMenu Info = new tbMenu();
-                Info.Id = Convert.ToInt32(data["Id"]);
-                Info.Name = data["Name"];
-                Info.ParentId = Convert.ToInt32(data["ParentId"]);
-                Info.Icon = data["Icon"];
-                Info.MenuType = Convert.ToInt32(data["MenuType"]);
-                Info.LinkAddress = data["LinkAddress"];
-                Info.IsEnable = "1";
-                Info.IsMenu = data["IsMenu"];
+                tbMenu Info = new tbMenu
+                {
+                    Id = Convert.ToInt32(data["Id"]),
+                    Name = data["Name"],
+                    ParentId = Convert.ToInt32(data["ParentId"]),
+                    Icon = data["Icon"],
+                    MenuType = Convert.ToInt32(data["MenuType"]),
+                    LinkAddress = data["LinkAddress"],
+                    IsEnable = "1",
+                    IsMenu = data["IsMenu"],
+                    ButtonId = data["ButtonId"],
+                    ButtonCss = data["ButtonCss"],
+                    ButtonClick = data["ButtonClick"]
+                };
+
                 resInfo.res = dal.UpMenu(Info);
             }
             catch (Exception ex)

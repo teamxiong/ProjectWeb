@@ -33,6 +33,7 @@
     <script type="text/javascript">
 
         $(function () {
+                GetUserViewpower();
             layui.use('table', function () {
                 var table = layui.table, form = layui.form;
                 table.render({
@@ -175,23 +176,6 @@
             };
             return data;
         }
-    </script>
-    <script type="text/html" id="toolbarDemo">
-        <button class="layui-btn" id="reload" data-type="reload" lay-event="reload">
-            <i class="layui-icon">&#xe615;</i> 搜索
-        </button>
-        <button class="layui-btn" id="Add" data-type="Add" lay-event="Add">
-            <i class="layui-icon">&#xe654;</i> 新增
-        </button>
-        <button class="layui-btn" id="edit" data-type="edit" lay-event="edit">
-            <i class="layui-icon">&#xe615;</i> 编辑
-        </button>
-        <button class="layui-btn" id="edit" data-type="edit" lay-event="Delete">
-            <i class="layui-icon">&#xe615;</i> 删除
-        </button>
-        <button class="layui-btn" id="edit" data-type="edit" lay-event="Role_authorization">
-            <i class="layui-icon">&#xe615;</i> 分配权限
-        </button>
     </script>
 }
 

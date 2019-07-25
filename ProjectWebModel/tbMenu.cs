@@ -42,6 +42,9 @@ namespace ProjectWebModel
         public string IsEnable { get; set; }
 
         public string IsMenu { get; set; }
+        public string ButtonId { get; set; }
+        public string ButtonCss { get; set; }
+        public string ButtonClick { get; set; }
 
     }
 }

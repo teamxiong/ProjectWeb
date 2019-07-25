@@ -59,6 +59,8 @@ namespace ProjectWeb.Controllers
                     }
                     else
                     {
+                 
+                        Info.UserMenus= tbMenuBusiness.GetUserMenus(Info.UserId);
                         HttpContext.Session.SetString("UserSession", Newtonsoft.Json.JsonConvert.SerializeObject(Info));
                         result.res = true;
                         result.info = "/Home/Index";
