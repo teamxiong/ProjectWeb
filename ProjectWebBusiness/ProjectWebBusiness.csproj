@@ -5,9 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="tbButtonBusiness.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ProjectWebCommon\ProjectWebCommon.csproj" />
-    <ProjectReference Include="..\ProjectWebCoreService\ProjectWebCoreService.csproj" />
-    <ProjectReference Include="..\ProjectWebDataAccess\ProjectWebDataAccess.csproj" />
     <ProjectReference Include="..\ProjectWebICoreService\ProjectWebICoreService.csproj" />
     <ProjectReference Include="..\ProjectWebModel\ProjectWebModel.csproj" />
   </ItemGroup>

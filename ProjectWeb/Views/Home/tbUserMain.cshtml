@@ -32,7 +32,6 @@
     <script type="text/javascript">
 
         $(function () {
-            GetUserViewpower();
             layui.use('table', function () {
                 var table = layui.table, form = layui.form;
                 table.render({
@@ -54,9 +53,9 @@
                               return '<input type="checkbox"   name="IsAble" lay-skin="switch" lay-filter="IsAble" lay-text="ON|OFF" ' + ((res.isAble) ?"checked":"")+'>'
                           }
                       },
-                      { field: 'updateTime', title: '最后更新时间' },
+                      { field: 'updateTime', title: '最后更新时间', templet: function (d) { return d.updateTime.replace('T', ' ') } },
                       { field: 'updateBy', title: '最后更新人' },
-                      { field: 'description', title: '角色描述' }
+                      { field: 'description', title: '备注' }
                   ]], where: {
                       data: Getdata()
                   }
@@ -77,7 +76,6 @@
                 //监听锁定操作
                 form.on('checkbox(lockDemo)', function (obj) {
                     layer.tips("")
-                    //  layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
                 });
 
                 var $ = layui.$, active = {
@@ -105,7 +103,7 @@
                     var checkStatus = table.checkStatus(obj.config.id);
                     switch (obj.event) {
                         case 'Add':
-                            OpenFrom('reload', '新增', '/Home/tbUserEdit?state=Add', '40%', '70%');
+                            OpenFrom('reload', '新增', '/Home/tbUserEdit?state=Add', '40%', '60%');
                             break;
                         case 'edit':
                             var data = checkStatus.data;
@@ -118,7 +116,7 @@
                                 return false;
                             }
                             console.log(data);
-                            OpenFrom('reload', '编辑', '/Home/tbUserEdit?state=Edit&Id=' + data[0].id + '', '40%', '80%');
+                            OpenFrom('reload', '编辑', '/Home/tbUserEdit?state=Edit&Id=' + data[0].id + '', '40%', '60%');
                             break;
                         case 'reload':
                             $('#reload').click();
@@ -211,7 +209,7 @@
                                 shadeClose: false,
                                 shade: 0.8,
                                 maxmin: false, //开启最大化最小化按钮
-                                area: ['60%', '80%'],
+                                area: ['38%', '50%'],
                                 content: "/Home/CommonHelpView?Type=User_authorization_Roles&Url=/Home/GetUser_authorization&data=" + datastr,
                                 btn: ['确定', '关闭'],
                                 yes: function (index) {

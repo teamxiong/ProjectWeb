@@ -1,5 +1,4 @@
-﻿using ProjectWebDataAccess;
-using ProjectWebICoreService;
+﻿using ProjectWebICoreService;
 using ProjectWebModel;
 using System;
 using System.Collections.Generic;
@@ -12,13 +11,30 @@ namespace ProjectWebBusiness
 {
    public class tbMenuBusiness
     {
-        public static tbMenuICoreService dal = new tbMenuDAL();
-        public static List<tbMenu> GetUserMenus(string UserId)
+        
+        public  tbMenuICoreService dal;
+        public  tbRoleICoreService Roledal;
+        public tbMenuBusiness(tbMenuICoreService _tbMenuICore, tbRoleICoreService _tbRoleICore)
+        {
+            dal = _tbMenuICore;
+            Roledal = _tbRoleICore;
+        }
+        /// <summary>
+        /// 获取用户页面的操作权限
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <returns></returns>
+        public List<tbMenu> GetUserMenus(string UserId)
         {
             List<tbMenu> List = dal.GettbMenu(UserId);
             return List;
         }
-        public static Dictionary<string, object> MenusAnalytical(IList<tbMenu> List)
+        /// <summary>
+        /// 获取用户权限菜单
+        /// </summary>
+        /// <param name="List"></param>
+        /// <returns></returns>
+        public Dictionary<string, object> MenusAnalytical(IList<tbMenu> List)
         {
             List<Dictionary<string, object>> deicList = new List<Dictionary<string, object>>();
             Tree InfoTreeNode = new Tree();
@@ -31,10 +47,14 @@ namespace ProjectWebBusiness
             result.Add("menuInfo", InfoTreeNode.child);
             return result;
         }
-        public static Dictionary<string, object> GetMenuBysystem(string UserId)
+        /// <summary>
+        /// 获取所有父级菜单
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <returns></returns>
+        public  Dictionary<string, object> GetMenuBysystem(string UserId)
         {
-            tbRoleICoreService da = new tbRoleDAL();
-            List<tbMenu> List = da.GetRole_authorization("90");
+            List<tbMenu> List = Roledal.GetRole_authorization("90");
             List<dtree> InfoTreeNodeList = new List<dtree>();
             dtree InfoTreeNode = new dtree();
             InfoTreeNode.id = "0";
@@ -53,13 +73,24 @@ namespace ProjectWebBusiness
             return result;
         }
 
-
-        public static List<tbMenu> GettbMenuList(int StartPage, int PageSize, Dictionary<string, string> data,ref int totalNumber)
+        /// <summary>
+        /// 查询获取菜单列表
+        /// </summary>
+        /// <param name="StartPage"></param>
+        /// <param name="PageSize"></param>
+        /// <param name="data"></param>
+        /// <param name="totalNumber"></param>
+        /// <returns></returns>
+        public  List<tbMenu> GettbMenuList(int StartPage, int PageSize, Dictionary<string, string> data,ref int totalNumber)
         {
             return dal.GettbMenuList(StartPage, PageSize, data, ref totalNumber); 
         }
-
-        public  static ResultInfo AddMenu(Dictionary<string,string> data)
+        /// <summary>
+        /// 添加菜单
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public   ResultInfo AddMenu(Dictionary<string,string> data)
         {
             ResultInfo resInfo = new ResultInfo();
             try
@@ -86,7 +117,12 @@ namespace ProjectWebBusiness
             }
             return resInfo;
         }
-        public static ResultInfo UpMenu(Dictionary<string, string> data)
+        /// <summary>
+        /// 修改菜单
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public  ResultInfo UpMenu(Dictionary<string, string> data)
         {
             ResultInfo resInfo = new ResultInfo();
             try
@@ -115,7 +151,12 @@ namespace ProjectWebBusiness
             }
             return resInfo;
         }
-        public static ResultInfo DeMenu(Dictionary<string, string> data)
+        /// <summary>
+        /// 删除菜单
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public  ResultInfo DeMenu(Dictionary<string, string> data)
         {
             ResultInfo resInfo = new ResultInfo();
             try

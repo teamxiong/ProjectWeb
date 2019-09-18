@@ -1,5 +1,4 @@
 ﻿using ProjectWebCommon;
-using ProjectWebDataAccess;
 using ProjectWebICoreService;
 using ProjectWebModel;
 using System;
@@ -11,19 +10,41 @@ namespace ProjectWebBusiness
 {
     public class tbUserBusiness
     {
-        public static tbUserICoreService dal = new tbUserDAL();
-        public static List<tbUser> GettbUserList(int StartPage, int PageSize, Dictionary<string, string> data, ref int total)
+        public static tbUserICoreService dal;
+        public tbUserBusiness(tbUserICoreService _tbUserICoreService)
+        {
+            dal = _tbUserICoreService;
+        }
+        /// <summary>
+        /// 查询用户列表
+        /// </summary>
+        /// <param name="StartPage"></param>
+        /// <param name="PageSize"></param>
+        /// <param name="data"></param>
+        /// <param name="total"></param>
+        /// <returns></returns>
+        public List<tbUser> GettbUserList(int StartPage, int PageSize, Dictionary<string, string> data, ref int total)
         {
             var UserLsit = dal.GettbUserList(data,StartPage, PageSize, ref total);
             return UserLsit;
         }
-        public static IList<tbUser> GettbUserByhwhere(Dictionary<string, string> dict)
+        /// <summary>
+        /// 查询用户角色列表
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <returns></returns>
+        public IList<tbUser> GettbUserByhwhere(Dictionary<string, string> dict)
         {
             StringBuilder where = new StringBuilder();
             IList<tbUser> List = dal.GettbUserByhwhere(dict);
             return List;
         }
-        public static ResultInfo AddtbUser(Dictionary<string, string> data)
+        /// <summary>
+        /// 添加用户
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public  ResultInfo AddtbUser(Dictionary<string, string> data,UserSession uSession)
         {
             ResultInfo resInfo = new ResultInfo();
             try
@@ -36,7 +57,7 @@ namespace ProjectWebBusiness
                 Info.Email = data["Email"];
                 Info.IsAble = true;
                 Info.Description = data["Description"];
-                Info.CreateBy = Info.UpdateBy = "xxx";
+                Info.CreateBy = Info.UpdateBy = uSession.UserName;
                 Info.CreateTime = Info.UpdateTime = DateTime.Now;
                 resInfo.res = dal.AddtbUser(Info);
             }
@@ -47,7 +68,12 @@ namespace ProjectWebBusiness
             }
             return resInfo;
         }
-        public static ResultInfo UptbUser(Dictionary<string, string> data)
+        /// <summary>
+        /// 修改用户
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public  ResultInfo UptbUser(Dictionary<string, string> data,UserSession uSession)
         {
             ResultInfo resInfo = new ResultInfo();
             try
@@ -59,7 +85,7 @@ namespace ProjectWebBusiness
                 Info.Email = data["Email"];
                 Info.IsAble = Convert.ToBoolean(data["IsAble"]);
                 Info.Description = data["Description"];
-                Info.UpdateBy = "xxx";
+                Info.UpdateBy = uSession.UserName;
                 Info.UpdateTime = DateTime.Now;
                 Info.AccountName = data["AccountName"];
                 resInfo.res = dal.UptbUser(Info);
@@ -71,7 +97,12 @@ namespace ProjectWebBusiness
             }
             return resInfo;
         }
-        public static ResultInfo DetbUser(Dictionary<string, string> data)
+        /// <summary>
+        /// 删除用户
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public  ResultInfo DetbUser(Dictionary<string, string> data)
         {
             ResultInfo resInfo = new ResultInfo();
             try
@@ -85,7 +116,12 @@ namespace ProjectWebBusiness
             }
             return resInfo;
         }
-        public static ResultInfo Reset_Password(Dictionary<string, string> data)
+        /// <summary>
+        /// 重置用户密码
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public  ResultInfo Reset_Password(Dictionary<string, string> data)
         {
             ResultInfo resInfo = new ResultInfo();
             try
@@ -101,16 +137,26 @@ namespace ProjectWebBusiness
             }
             return resInfo;
         }
-
-        public static ResultInfo User_authorization_Roles(string UserId, string RoleId)
+        /// <summary>
+        /// 保存用户分配角色
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <param name="RoleId"></param>
+        /// <returns></returns>
+        public ResultInfo User_authorization_Roles(string UserId, string RoleId)
         {
             ResultInfo resInfo = new ResultInfo();
             resInfo = dal.User_authorization_Roles(UserId, RoleId);
             return resInfo;
         }
 
-        ///用户登录
-        public static UserSession Click_Login(string UserId, string PassWord)
+        /// <summary>
+        /// 用户登录
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <param name="PassWord"></param>
+        /// <returns></returns>
+        public UserSession Click_Login(string UserId, string PassWord)
         {
             PassWord = Common.GetMD5String(PassWord);
             UserSession Info = dal.Click_Login(UserId, PassWord);

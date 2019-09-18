@@ -5,6 +5,11 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Remove="Views\Home\tbButtonEdit.cshtml" />
+    <Content Remove="Views\Home\tbButtonMain.cshtml" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
@@ -15,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProjectWebBusiness\ProjectWebBusiness.csproj" />
+    <ProjectReference Include="..\ProjectWebDataAccess\ProjectWebDataAccess.csproj" />
     <ProjectReference Include="..\ProjectWebModel\ProjectWebModel.csproj" />
   </ItemGroup>
 

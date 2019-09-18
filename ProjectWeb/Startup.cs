@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ProjectWebDataAccess;
+using ProjectWebICoreService;
 
 namespace ProjectWeb
 {
@@ -35,6 +37,9 @@ namespace ProjectWeb
                 int timespan = 20;
                 opts.IdleTimeout = TimeSpan.FromMinutes(timespan);
             });
+            services.AddScoped<tbMenuICoreService, tbMenuDAL>();
+            services.AddScoped<tbRoleICoreService, tbRoleDAL>();
+            services.AddScoped<tbUserICoreService, tbUserDAL>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 

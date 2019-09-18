@@ -33,7 +33,6 @@
     <script type="text/javascript">
 
         $(function () {
-                GetUserViewpower();
             layui.use('table', function () {
                 var table = layui.table, form = layui.form;
                 table.render({
@@ -45,9 +44,9 @@
                   , limits: [20, 50, 100, 500, 800, 1000]
                   , title: '数据'
                   , cols: [[
-                            { type: 'checkbox', fixed: 'left' },
-                            { field: 'roleName', title: '角色名称' },
-                      { field: 'updateTime', title: '最后更新时间' },
+                      { type: 'checkbox', fixed: 'left' },
+                      { field: 'roleName', title: '角色名称' },
+                      { field: 'updateTime', title: '最后更新时间', templet: function (d) { return d.updateTime.replace('T',' ') } },
                       { field: 'updateBy', title: '最后更新人' },
                       { field: 'description', title: '角色描述' }
                   ]], where: {
@@ -70,7 +69,6 @@
                 //监听锁定操作
                 form.on('checkbox(lockDemo)', function (obj) {
                     layer.tips("")
-                    //  layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
                 });
 
                 var $ = layui.$, active = {
@@ -98,7 +96,7 @@
                     var checkStatus = table.checkStatus(obj.config.id);
                     switch (obj.event) {
                         case 'Add':
-                            OpenFrom('reload', '新增', '/Home/tbRoleEdit?state=Add', '40%', '70%');
+                            OpenFrom('reload', '新增', '/Home/tbRoleEdit?state=Add', '30%', '30%');
                             break;
                         case 'edit':
                             var data = checkStatus.data;
@@ -111,7 +109,7 @@
                                 return false;
                             }
                             console.log(data);
-                            OpenFrom('reload', '编辑', '/Home/tbRoleEdit?state=Edit&Id=' + data[0].id , '40%', '80%');
+                            OpenFrom('reload', '编辑', '/Home/tbRoleEdit?state=Edit&Id=' + data[0].id , '30%', '30%');
                             break;
                         case 'reload':
                             $('#reload').click();

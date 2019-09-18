@@ -10,11 +10,19 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectWebBusiness;
+using ProjectWebICoreService;
 using ProjectWebModel;
 namespace ProjectWeb.Controllers
 {
     public class AccountController : Controller
     {
+        public readonly tbMenuBusiness _MenuService;
+        public readonly tbUserBusiness _tbUserService;
+        public AccountController(tbMenuICoreService _tbMenuICore, tbRoleICoreService _tbRoleICore, tbUserICoreService _tbUserICore)
+        {
+            _MenuService = new tbMenuBusiness(_tbMenuICore, _tbRoleICore);
+            _tbUserService = new tbUserBusiness(_tbUserICore);
+        }
         public IActionResult Login()
         {
             return View();
@@ -44,7 +52,7 @@ namespace ProjectWeb.Controllers
                     result.info = "验证码输入错误，请重新输入！";
                     return Json(result);
                 }
-                UserSession Info =tbUserBusiness.Click_Login(logname, logpass);
+                UserSession Info = _tbUserService.Click_Login(logname, logpass);
                 if (Info==null)
                 {
                     result.res = false;
@@ -59,8 +67,7 @@ namespace ProjectWeb.Controllers
                     }
                     else
                     {
-                 
-                        Info.UserMenus= tbMenuBusiness.GetUserMenus(Info.UserId);
+                        Info.UserMenus= _MenuService.GetUserMenus(Info.UserId);
                         HttpContext.Session.SetString("UserSession", Newtonsoft.Json.JsonConvert.SerializeObject(Info));
                         result.res = true;
                         result.info = "/Home/Index";

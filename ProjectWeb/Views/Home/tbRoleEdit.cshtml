@@ -35,8 +35,8 @@
 
 </form>
 <div class="layui-row" style="margin-top:30px;">
-    <div class="layui-col-xs3">&nbsp;</div>
-    <div class="layui-col-xs4">
+    <div class="layui-col-xs2">&nbsp;</div>
+    <div class="layui-col-xs5">
         <div class="layui-form-item">
             <div class="layui-input-block">
                 <button class="layui-btn layui-btn-fluid" onclick="Sava();"> 保存</button>
@@ -50,19 +50,20 @@
         $(function () {
             if (state == "Edit") {
                 var Id = GetQueryString("Id");
-                var data = {
-                    Id: Id
-                };
                 $.ajax({
                     type: "POST",
-                    url: "/Home/GettbRoleByhwhere",
+                    url: "/Home/GettbRoleInfo",
                     async: false,
-                    data: { data: data },
+                    data: { Id: Id },
                     success: function (data) {
-                        Info = data[0];
-                        $("#Id").val(Info.id);
-                        $("#RoleName").val(Info.roleName);
-                        $("#Description").val(Info.description);
+                        if (data.res) {
+                            Info = data.info;
+                            $("#Id").val(Info.id);
+                            $("#RoleName").val(Info.roleName);
+                            $("#Description").val(Info.description);
+                        } else {
+                            Mmsg(data.info);
+                        }
                     },
                     error: function (jqXHR) {
                         console.log("Error: " + jqXHR.status);

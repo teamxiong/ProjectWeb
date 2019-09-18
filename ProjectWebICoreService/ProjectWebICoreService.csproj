@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="tbButtonICoreService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ProjectWebModel\ProjectWebModel.csproj" />
   </ItemGroup>
 

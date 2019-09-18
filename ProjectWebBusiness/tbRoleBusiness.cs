@@ -1,5 +1,4 @@
-﻿using ProjectWebDataAccess;
-using ProjectWebICoreService;
+﻿using ProjectWebICoreService;
 using ProjectWebModel;
 using System;
 using System.Collections.Generic;
@@ -10,8 +9,20 @@ namespace ProjectWebBusiness
 {
     public class tbRoleBusiness
     {
-        public static tbRoleICoreService dal = new tbRoleDAL();
-        public static List<tbRole> GettbRoleList(int StartPage, int PageSize, Dictionary<string, string> data, ref int totalNumber)
+        public static tbRoleICoreService dal;
+        public tbRoleBusiness(tbRoleICoreService _tbRoleICoreService)
+        {
+            dal = _tbRoleICoreService;
+        }
+        /// <summary>
+        /// 查询角色列表
+        /// </summary>
+        /// <param name="StartPage"></param>
+        /// <param name="PageSize"></param>
+        /// <param name="data"></param>
+        /// <param name="totalNumber"></param>
+        /// <returns></returns>
+        public  List<tbRole> GettbRoleList(int StartPage, int PageSize, Dictionary<string, string> data, ref int totalNumber)
         {
             List<tbRole> RoleList = new List<tbRole>();
             string UserId = "";
@@ -30,12 +41,26 @@ namespace ProjectWebBusiness
           
             return RoleList;
         }
-        public static List<tbRole> GetUser_authorization(int StartPage, int PageSize, Dictionary<string, string> data, ref int totalNumber)
+        /// <summary>
+        /// 获取分配用户角色列表
+        /// </summary>
+        /// <param name="StartPage"></param>
+        /// <param name="PageSize"></param>
+        /// <param name="data"></param>
+        /// <param name="totalNumber"></param>
+        /// <returns></returns>
+        public List<tbRole> GetUser_authorization(int StartPage, int PageSize, Dictionary<string, string> data, ref int totalNumber)
         {
             List<tbRole> List = dal.GetUser_authorization(StartPage, PageSize, data, ref totalNumber);
             return List;
         }
-        public static ResultInfo AddtbRole(Dictionary<string, string> data)
+        /// <summary>
+        /// 新增角色
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="uSession"></param>
+        /// <returns></returns>
+        public  ResultInfo AddtbRole(Dictionary<string, string> data, UserSession uSession)
         {
             ResultInfo resInfo = new ResultInfo();
             try
@@ -44,7 +69,7 @@ namespace ProjectWebBusiness
                 Info.RoleCode = "";
                 Info.RoleName = data["RoleName"];
                 Info.Description = data["Description"];
-                Info.CreateBy = Info.UpdateBy = "xxx";
+                Info.UpdateBy = uSession.UserName;
                 Info.CreateTime = Info.UpdateTime = DateTime.Now;
                 resInfo.res = dal.AddtbRole(Info);
             }
@@ -55,7 +80,7 @@ namespace ProjectWebBusiness
             }
             return resInfo;
         }
-        public static ResultInfo UptbRole(Dictionary<string, string> data)
+        public  ResultInfo UptbRole(Dictionary<string, string> data,UserSession uSession)
         {
             ResultInfo resInfo = new ResultInfo();
             try
@@ -65,7 +90,7 @@ namespace ProjectWebBusiness
                 Info.RoleCode = "";
                 Info.RoleName = data["RoleName"];
                 Info.Description = data["Description"];
-                Info.UpdateBy = "xxx";
+                Info.UpdateBy = uSession.UserName;
                 Info.UpdateTime = DateTime.Now;
                 resInfo.res = dal.UptbRole(Info);
             }
@@ -76,7 +101,12 @@ namespace ProjectWebBusiness
             }
             return resInfo;
         }
-        public static ResultInfo DetbRole(Dictionary<string, string> data)
+        /// <summary>
+        /// 删除角色
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public  ResultInfo DetbRole(Dictionary<string, string> data)
         {
             ResultInfo resInfo = new ResultInfo();
             try
@@ -90,8 +120,12 @@ namespace ProjectWebBusiness
             }
             return resInfo;
         }
-
-        public static Dictionary<string, object> GetRole_authorization(string RoleId)
+        /// <summary>
+        /// 获取角色分配的权限
+        /// </summary>
+        /// <param name="RoleId"></param>
+        /// <returns></returns>
+        public Dictionary<string, object> GetRole_authorization(string RoleId)
         {
             List<tbMenu> List = dal.GetRole_authorization(RoleId);
             dtree InfoTreeNode = new dtree();
@@ -110,8 +144,13 @@ namespace ProjectWebBusiness
             return dict;
         }
 
-
-        public static ResultInfo Role_authorization(int RoleId, string authorizationStr)
+        /// <summary>
+        /// 保存角色权限
+        /// </summary>
+        /// <param name="RoleId"></param>
+        /// <param name="authorizationStr"></param>
+        /// <returns></returns>
+        public ResultInfo Role_authorization(int RoleId, string authorizationStr)
         {
             ResultInfo resInfo = new ResultInfo();
             try
@@ -129,6 +168,15 @@ namespace ProjectWebBusiness
                 resInfo.info = ex.Message;
             }
             return resInfo;
+        }
+        /// <summary>
+        /// 根据角色ID获取角色详情
+        /// </summary>
+        /// <param name="RoleId"></param>
+        /// <returns></returns>
+        public tbRole GettbRoleInfo(string RoleId)
+        {
+            return dal.GettbRoleInfo(Convert.ToInt32(RoleId));
         }
     }
 }

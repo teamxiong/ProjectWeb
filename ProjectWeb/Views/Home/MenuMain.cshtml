@@ -42,7 +42,6 @@
 @section scripts{
     <script type="text/javascript">
         $(function () {
-            GetUserViewpower();
         })
 
         layui.config({
@@ -61,7 +60,7 @@
                     treeSpid: 0,
                     treeIdName: 'id',
                     treePidName: 'parentId',
-                    treeDefaultClose: false,
+                    treeDefaultClose: false,//是否默认折叠
                     treeLinkage: false,
                     toolbar: '#toolbarDemo',
                     method: "post",
@@ -118,7 +117,7 @@
                         renderTable();
                         break;
                     case 'Add':
-                        OpenFrom('reload', '新增', '/Home/MenuEdit?state=Add', '40%', '70%');
+                        OpenFrom('reload', '新增', '/Home/MenuEdit?state=Add', '40%', '50%');
                         break;
                     case 'edit':
                         var data = checkStatus.data;
@@ -131,7 +130,7 @@
                             return false;
                         }
                         console.log(data);
-                        OpenFrom('reload', '编辑', '/Home/MenuEdit?state=Edit&Id=' + data[0].id + '', '40%', '80%');
+                        OpenFrom('reload', '编辑', '/Home/MenuEdit?state=Edit&Id=' + data[0].id + '', '40%', '50%');
                         break;
                     case 'reload':
 

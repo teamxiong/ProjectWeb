@@ -6,13 +6,23 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProjectWebBusiness;
+using ProjectWebICoreService;
 using ProjectWebModel;
 
 namespace ProjectWeb.Controllers
 {
     public class HomeController : BaseController
     {
-
+        public readonly tbMenuBusiness _MenuService;
+        public readonly tbRoleBusiness _tbRoleService;
+        public readonly tbUserBusiness _tbUserService;
+        public HomeController(tbMenuICoreService _tbMenuICore, tbRoleICoreService _tbRoleICore, tbUserICoreService _tbUserICore)
+        {
+            _MenuService = new tbMenuBusiness(_tbMenuICore, _tbRoleICore);
+            _tbRoleService = new tbRoleBusiness(_tbRoleICore);
+            _tbUserService = new tbUserBusiness(_tbUserICore);
+        }
+        #region 主页
         public IActionResult Index()
         {
             ViewBag.UserName = uSession.UserName;
@@ -23,18 +33,25 @@ namespace ProjectWeb.Controllers
         {
             return View();
         }
+        //获取用户菜单
         [HttpPost]
         public JsonResult GettbMenu()
         {
-            Dictionary<string, object> dict = tbMenuBusiness.MenusAnalytical(uSession.UserMenus);
+            Dictionary<string, object> dict = _MenuService.MenusAnalytical(uSession.UserMenus);
             return Json(dict);
         }
+        //系统退出
         public IActionResult OutLogin()
         {
             HttpContext.Session.Clear();
             HttpContext.Response.Redirect("/Account/Login");
             return View();
         }
+        public IActionResult CommonHelpView()
+        {
+            return View();
+        }
+        #endregion
         #region Menu
         public IActionResult MenuMain()
         {
@@ -44,6 +61,7 @@ namespace ProjectWeb.Controllers
         {
             return View();
         }
+        //获取菜单列表
         [HttpPost]
         public JsonResult GetMenuList(Dictionary<string, string> data, int page, int limit)
         {
@@ -51,7 +69,7 @@ namespace ProjectWeb.Controllers
             try
             {
                 int totalNumber = 0;
-               List<tbMenu> InfoList = tbMenuBusiness.GettbMenuList(page, limit, data,ref totalNumber);
+               List<tbMenu> InfoList = _MenuService.GettbMenuList(page, limit, data,ref totalNumber);
                 info.Add("code", 0);
                 info.Add("msg", "");
                 info.Add("count", totalNumber);
@@ -63,13 +81,15 @@ namespace ProjectWeb.Controllers
             }
             return Json(info);
         }
+        //获取上级菜单
         [HttpPost]
         public JsonResult GetMenuBysystem()
         {
             string RoleId = Request.Query["RoleId"];
-            Dictionary<string, object> InfoList = tbMenuBusiness.GetMenuBysystem("939");
+            Dictionary<string, object> InfoList = _MenuService.GetMenuBysystem("939");
             return Json(InfoList);
         }
+        //保存系统菜单
         [HttpPost]
         public JsonResult SavaMenu(Dictionary<string, string> data)
         {
@@ -84,116 +104,19 @@ namespace ProjectWeb.Controllers
             switch (state)
             {
                 case "Add":
-                    resInfo = tbMenuBusiness.AddMenu(data);
+                    resInfo = _MenuService.AddMenu(data);
                     break;
                 case "Edit":
-                    resInfo = tbMenuBusiness.UpMenu(data);
+                    resInfo = _MenuService.UpMenu(data);
                     break;
                 case "Delete":
-                    resInfo = tbMenuBusiness.DeMenu(data);
+                    resInfo = _MenuService.DeMenu(data);
                     break;
             }
-            return Json(resInfo);
-        }
-#endregion
-
-        #region tbButton
-        public IActionResult tbButtonMain()
-        {
-            return View();
-        }
-        public IActionResult tbButtonEdit()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public JsonResult GettbButtonList(Dictionary<string, string> data, int page, int limit)
-        {
-            Dictionary<string, object> info = new Dictionary<string, object>();
-            try
-            {
-                Dictionary<string, object> dictList = tbButtonBusiness.GettbButtonList(page, limit, data);
-                info.Add("status", 200);
-                info.Add("message", "");
-                info.Add("total", (dictList == null) ? 0 : dictList["rowCount"]);
-                info.Add("rows", (dictList == null) ? null : dictList["rows"]);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            return Json(info);
-        }
-        [HttpPost]
-        public JsonResult GettbButtonByMenuIdList(Dictionary<string, string> data, int page, int limit)
-        {
-            Dictionary<string, object> info = new Dictionary<string, object>();
-            try
-            {
-                Dictionary<string, object> dictList = tbButtonBusiness.GettbButtonByMenuIdList(page, limit, data);
-                info.Add("status", 200);
-                info.Add("message", "");
-                info.Add("total", (dictList == null) ? 0 : dictList["rowCount"]);
-                info.Add("rows", (dictList == null) ? null : dictList["rows"]);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            return Json(info);
-        }
-
-        [HttpPost]
-        public JsonResult GettbButtonByhwhere(Dictionary<string, string> data)
-        {
-            IList<tbButton> list = tbButtonBusiness.GettbButtonByhwhere(data);
-            return Json(list);
-        }
-        [HttpPost]
-        public JsonResult SavatbButton(Dictionary<string, string> data)
-        {
-            ResultInfo resInfo = new ResultInfo();
-            string state = Request.Query["state"];
-            if (data == null || string.IsNullOrEmpty(state))
-            {
-                resInfo.res = false;
-                resInfo.info = "获取参数失败！";
-                return Json(resInfo);
-            }
-            switch (state)
-            {
-                case "Add":
-                    resInfo = tbButtonBusiness.AddtbButton(data);
-                    break;
-                case "Edit":
-                    resInfo = tbButtonBusiness.UptbButton(data);
-                    break;
-                case "Delete":
-                    resInfo = tbButtonBusiness.DetbButton(data);
-                    break;
-            }
-            return Json(resInfo);
-        }
-        public IActionResult CommonHelpView()
-        {
-            return View();
-        }
-        [HttpPost]
-        public JsonResult SavatbMenuButton(string MenuId, string ButtonIdstr)
-        {
-            ResultInfo resInfo = new ResultInfo();
-            if (string.IsNullOrEmpty(MenuId) || string.IsNullOrEmpty(ButtonIdstr))
-            {
-                resInfo.res = false;
-                resInfo.info = "获取参数失败！";
-                return Json(resInfo);
-            }
-            resInfo = tbMenuButtonBusiness.UptbMenuButton(MenuId, ButtonIdstr);
             return Json(resInfo);
         }
         #endregion
-        #region tbRole
+        #region 角色管理
         public IActionResult tbRoleMain()
         {
             return View();
@@ -202,7 +125,30 @@ namespace ProjectWeb.Controllers
         {
             return View();
         }
-
+        //获取用户角色详情
+        public JsonResult GettbRoleInfo(string Id)
+        {
+            ResultInfo result = new ResultInfo();
+            try
+            {
+                if (string.IsNullOrEmpty(Id))
+                {
+                    result.res = false;
+                    result.info = "获取参数失败！";
+                    return Json(result);
+                }
+                result.info = _tbRoleService.GettbRoleInfo(Id);
+                result.res = true;
+            }
+            catch (Exception ex)
+            {
+                result.res = false;
+                result.info = ex.Message;
+                return Json(result);
+            }
+            return Json(result);
+        }
+        //查询用户列表
         [HttpPost]
         public JsonResult GettbRoleList(Dictionary<string, string> data, int page, int limit)
         {
@@ -210,7 +156,7 @@ namespace ProjectWeb.Controllers
             try
             {
                 int totalNumber = 0;
-                List<tbRole> RoleList = tbRoleBusiness.GettbRoleList(page, limit, data, ref totalNumber);
+                List<tbRole> RoleList = _tbRoleService.GettbRoleList(page, limit, data, ref totalNumber);
                 info.Add("status", 200);
                 info.Add("message", "");
                 info.Add("total", totalNumber);
@@ -222,26 +168,7 @@ namespace ProjectWeb.Controllers
             }
             return Json(info);
         }
-        [HttpPost]
-        public JsonResult GetUser_authorization(Dictionary<string, string> data, int page, int limit)
-        {
-            Dictionary<string, object> info = new Dictionary<string, object>();
-            try
-            {
-                int totalNumber = 0;
-                List<tbRole> RoleList = tbRoleBusiness.GetUser_authorization(page, limit, data, ref totalNumber);
-                info.Add("status", 200);
-                info.Add("message", "");
-                info.Add("total", totalNumber);
-                info.Add("rows", RoleList);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            return Json(info);
-        }
-
+        //保存角色
         [HttpPost]
         public JsonResult SavatbRole(Dictionary<string, string> data)
         {
@@ -256,29 +183,31 @@ namespace ProjectWeb.Controllers
             switch (state)
             {
                 case "Add":
-                    resInfo = tbRoleBusiness.AddtbRole(data);
+                    resInfo = _tbRoleService.AddtbRole(data, uSession);
                     break;
                 case "Edit":
-                    resInfo = tbRoleBusiness.UptbRole(data);
+                    resInfo = _tbRoleService.UptbRole(data,uSession);
                     break;
                 case "Delete":
-                    resInfo = tbRoleBusiness.DetbRole(data);
+                    resInfo = _tbRoleService.DetbRole(data);
                     break;
             }
             return Json(resInfo);
         }
-
+        //角色分配权限视图
         public IActionResult Role_authorization()
         {
             return View();
         }
+        //获取角色分配的权限
         [HttpPost]
         public JsonResult GetRole_authorization()
         {
             string RoleId = Request.Query["RoleId"];
-            Dictionary<string, object> Role_authorization = tbRoleBusiness.GetRole_authorization(RoleId);
+            Dictionary<string, object> Role_authorization = _tbRoleService.GetRole_authorization(RoleId);
             return Json(Role_authorization);
         }
+        //保存角色权限
         [HttpPost]
         public JsonResult Role_authorization(string RoleId, string authorizationStr)
         {
@@ -289,11 +218,11 @@ namespace ProjectWeb.Controllers
                 resInfo.info = "获取参数失败！";
                 return Json(resInfo);
             }
-            resInfo = tbRoleBusiness.Role_authorization(Convert.ToInt32(RoleId), authorizationStr);
+            resInfo = _tbRoleService.Role_authorization(Convert.ToInt32(RoleId), authorizationStr);
             return Json(resInfo);
         }
         #endregion
-        #region tbUser
+        #region 用户管理
 
         public IActionResult tbUserMain()
         {
@@ -303,7 +232,7 @@ namespace ProjectWeb.Controllers
         {
             return View();
         }
-
+        //查询用户列表
         [HttpPost]
         public JsonResult GettbUserList(Dictionary<string, string> data, int page, int limit)
         {
@@ -311,7 +240,7 @@ namespace ProjectWeb.Controllers
             try
             {
                 int total = 0;
-                List<tbUser> resList = tbUserBusiness.GettbUserList(page, limit, data, ref total);
+                List<tbUser> resList = _tbUserService.GettbUserList(page, limit, data, ref total);
                 info.Add("status", 200);
                 info.Add("message", "");
                 info.Add("total", total);
@@ -323,19 +252,40 @@ namespace ProjectWeb.Controllers
             }
             return Json(info);
         }
+        //查询用户角色列表
         [HttpPost]
         public JsonResult GettbUserByhwhere(Dictionary<string, string> data)
         {
-            IList<tbUser> list = tbUserBusiness.GettbUserByhwhere(data);
+            IList<tbUser> list = _tbUserService.GettbUserByhwhere(data);
             return Json(list);
         }
+        ////获取分配用户角色列表
+        // [HttpPost]
+        // public JsonResult User_authorization_Roles(Dictionary<string, string> data)
+        // {
+        //     IList<tbUser> list = tbUserBusiness.GettbUserByhwhere(data);
+        //     return Json(list);
+        // }
         [HttpPost]
-        public JsonResult User_authorization_Roles(Dictionary<string, string> data)
+        public JsonResult GetUser_authorization(Dictionary<string, string> data, int page, int limit)
         {
-            IList<tbUser> list = tbUserBusiness.GettbUserByhwhere(data);
-            return Json(list);
+            Dictionary<string, object> info = new Dictionary<string, object>();
+            try
+            {
+                int totalNumber = 0;
+                List<tbRole> RoleList = _tbRoleService.GetUser_authorization(page, limit, data, ref totalNumber);
+                info.Add("status", 200);
+                info.Add("message", "");
+                info.Add("total", totalNumber);
+                info.Add("rows", RoleList);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return Json(info);
         }
-
+        //保存用户
         [HttpPost]
         public JsonResult SavatbUser(Dictionary<string, string> data)
         {
@@ -350,23 +300,21 @@ namespace ProjectWeb.Controllers
             switch (state)
             {
                 case "Add":
-                    resInfo = tbUserBusiness.AddtbUser(data);
+                    resInfo = _tbUserService.AddtbUser(data,uSession);
                     break;
                 case "Edit":
-                    resInfo = tbUserBusiness.UptbUser(data);
+                    resInfo = _tbUserService.UptbUser(data,uSession);
                     break;
                 case "Delete":
-                    resInfo = tbUserBusiness.DetbUser(data);
+                    resInfo = _tbUserService.DetbUser(data);
                     break;
                 case "Reset":
-                    resInfo = tbUserBusiness.Reset_Password(data);
+                    resInfo = _tbUserService.Reset_Password(data);
                     break;
             }
             return Json(resInfo);
         }
-        #endregion
-
-
+        //保存用户分配角色
         [HttpPost]
         public JsonResult User_tbUserRole(string UserId, string RoleId)
         {
@@ -377,9 +325,9 @@ namespace ProjectWeb.Controllers
                 resInfo.info = "获取参数失败！";
                 return Json(resInfo);
             }
-            resInfo = tbUserBusiness.User_authorization_Roles(UserId, RoleId);
+            resInfo = _tbUserService.User_authorization_Roles(UserId, RoleId);
             return Json(resInfo);
         }
-
+        #endregion
     }
 }

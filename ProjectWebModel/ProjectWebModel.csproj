@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="tbButton.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="sqlSugarCore" Version="5.0.0.8" />
   </ItemGroup>
 

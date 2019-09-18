@@ -218,7 +218,7 @@ function(e) {
             P.popupRight({
                 id: "LAY_adminPopupAbout",
                 success: function() {
-                    s(this.id).render("system/about")
+           //         s(this.id).render("system/about")
                 }
             })
         },

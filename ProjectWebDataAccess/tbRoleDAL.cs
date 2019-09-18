@@ -121,5 +121,15 @@ namespace ProjectWebDataAccess
             }
             return result;
         }
+
+        /// <summary>
+        /// 根据角色ID获取角色详情
+        /// </summary>
+        /// <param name="RoleId"></param>
+        /// <returns></returns>
+        public tbRole GettbRoleInfo(int RoleId)
+        {
+           return Db.Queryable<tbRole>().Where(i => i.Id == RoleId).First();
+        }
     }
 }

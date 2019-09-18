@@ -11,7 +11,7 @@ namespace ProjectWebModel
     /// </summary>
     public class ResultInfo
     {
-        string _info = string.Empty;   //输出消息   
+        object _info = string.Empty;   //输出消息   
 
         public ResultInfo()
         {
@@ -29,7 +29,7 @@ namespace ProjectWebModel
             }
         }
 
-        public string info
+        public object info
         {
             get { return _info; }
             set { _info = value; }
