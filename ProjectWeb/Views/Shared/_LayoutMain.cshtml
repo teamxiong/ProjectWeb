@@ -11,6 +11,7 @@
     <script src="~/lib/layer/layer/layer.js"></script>
     <script type="text/javascript">
         $(function () {
+            GetUserViewpower();
         });
         function OpenFrom(id, title, Url, width, height) {
             layer.open({
@@ -50,7 +51,6 @@
                     MenId: MenId
                 },
                 success: function (data) {
-                    console.log(data);
                     $("#Buttonscript").tmpl(data).appendTo('#toolbarDemo');
                 },
                 error: function (jqXHR) {

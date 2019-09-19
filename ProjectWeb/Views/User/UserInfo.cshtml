@@ -3,63 +3,99 @@
     ViewData["Title"] = "UserInfo";
     Layout = "~/Views/Shared/_LayoutMain.cshtml";
 }
+<script type="text/javascript">
+    layui.use('form', function () {
+        var form = layui.form;
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+          //  layer.msg(JSON.stringify(data.field));
+            layer.load(2);
+            $.ajax({
+                url: "/User/UpUserInfo",
+                type: "POST",
+                data: data.field,
+                success: function (result) {
+                    layer.closeAll('loading');
+                    if (result.res) {
+                        Mmsg("操作成功！");
+                    } else {
+                        Mmsg(result.info);
+                    }
+                }, error: function (err) {
+                    layer.closeAll('loading');
+                    layer.msg('系统繁忙，请稍后再试 ！');
+                }
+            })
+            return false;
+        });
+    });
+    $(function () {
+        $.ajax({
+            url: "/User/GetUserInfo",
+            type: "POST",
+            success: function (result) {
+                layer.closeAll('loading');
+                if (result.res) {
+                    $("#AccountName").val(result.info.AccountName);
+                    $("#Email").val(result.info.Email);
+                    $("#MobilePhone").val(result.info.MobilePhone);
+                    $("#RealName").val(result.info.UserName);
+                } else {
+                    Mmsg(result.info);
+                }
+            }, error: function (err) {
+                layer.closeAll('loading');
+                layer.msg('系统繁忙，请稍后再试 ！');
+            }
+        })
+    })
+</script>
+<form class="layui-form" action="">
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">设置我的资料</div>
+                    <div class="layui-card-body" pad15>
 
-<div class="layui-fluid">
-    <div class="layui-row layui-col-space15">
-        <div class="layui-col-md12">
-            <div class="layui-card">
-                <div class="layui-card-header">设置我的资料</div>
-                <div class="layui-card-body" pad15>
+                        <div class="layui-form" lay-filter="">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">用户名</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="AccountName" value="" id="AccountName" readonly class="layui-input">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">不可修改。一般用于后台登入名</div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">昵称</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="RealName" id="RealName" value="" lay-verify="required" autocomplete="off" placeholder="请输入昵称" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">手机</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="MobilePhone" id="MobilePhone" value="" lay-verify="phone" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">邮箱</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="Email" value="" id="Email" lay-verify="email" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" lay-submit lay-filter="formDemo">确认修改</button>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="layui-form" lay-filter="">
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">我的角色</label>
-                            <div class="layui-input-inline">
-                                <select name="role" lay-verify="">
-                                    <option value="1" selected>超级管理员</option>
-                                    <option value="2" disabled>普通管理员</option>
-                                    <option value="3" disabled>审核员</option>
-                                    <option value="4" disabled>编辑人员</option>
-                                </select>
-                            </div>
-                            <div class="layui-form-mid layui-word-aux">当前角色不可更改为其它角色</div>
-                        </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">用户名</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="username" value="xianxin" readonly class="layui-input">
-                            </div>
-                            <div class="layui-form-mid layui-word-aux">不可修改。一般用于后台登入名</div>
-                        </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">昵称</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="nickname" value="贤心" lay-verify="nickname" autocomplete="off" placeholder="请输入昵称" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">手机</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="cellphone" value="" lay-verify="phone" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">邮箱</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="email" value="" lay-verify="email" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-form-item">
-                            <div class="layui-input-block">
-                                <button class="layui-btn" lay-submit lay-filter="setmyinfo">确认修改</button>
-                                <button type="reset" class="layui-btn layui-btn-primary">重新填写</button>
-                            </div>
-                        </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+</form>
 

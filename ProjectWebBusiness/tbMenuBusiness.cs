@@ -24,7 +24,7 @@ namespace ProjectWebBusiness
         /// </summary>
         /// <param name="UserId"></param>
         /// <returns></returns>
-        public List<tbMenu> GetUserMenus(string UserId)
+        public List<tbMenu> GetUserMenus(int UserId)
         {
             List<tbMenu> List = dal.GettbMenu(UserId);
             return List;

@@ -28,9 +28,7 @@
                 type: "POST",
                 url: "/Home/GettbMenu",
                 async: false,
-                data: {},
                 success: function (data) {
-                    console.log(data);
                     $("#Menuscript").tmpl(data.menuInfo).appendTo('#LAY-system-side-menu');
                 },
                 error: function (jqXHR) {

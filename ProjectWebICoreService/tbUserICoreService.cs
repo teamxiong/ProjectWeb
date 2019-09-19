@@ -14,8 +14,10 @@ namespace ProjectWebICoreService
         IList<tbUser> GettbUserByhwhere(Dictionary<string, string> data);
         bool AddtbUser(tbUser Info);
         bool UptbUser(tbUser Info);
+        bool UpPassword(tbUser Info);
         bool DetbUser(string Id);
          bool Reset_Password(string Id,string Password);
         ResultInfo User_authorization_Roles(string UserId, string RoleId);
+        tbUser GetUserInfo(int UserId);
     }
 }

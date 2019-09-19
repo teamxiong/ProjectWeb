@@ -32,13 +32,19 @@ namespace ProjectWebDataAccess
             }
             return queryable.ToList();
         }
+        /// <summary>
+        /// 用户登录
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <param name="PassWord"></param>
+        /// <returns></returns>
         public UserSession Click_Login(string UserId, string PassWord)
         {
             var queryable = Db.Queryable<tbUser, tbUserRole>((t, tr) => new object[] {
                 JoinType.Left, t.Id==tr.UserId
            }).Where((t, tr) => t.AccountName == UserId && t.Password == PassWord && t.IsAble == true).Select((t, tr) => new UserSession()
            {
-               UserId = t.Id.ToString(),
+               UserId = t.Id,
                Email = t.Email,
                MobilePhone = t.MobilePhone,
                UserName = t.RealName,
@@ -52,7 +58,11 @@ namespace ProjectWebDataAccess
         }
         public bool UptbUser(tbUser Info)
         {
-            return (Db.Updateable(Info).IgnoreColumns(i => i == "Password").ExecuteCommand() > 0) ? true : false;
+            return (Db.Updateable<tbUser>(Info).IgnoreColumns(i => new { i.Password }).ExecuteCommand() > 0) ? true : false;
+        }
+        public bool UpPassword(tbUser Info)
+        {
+            return (Db.Updateable(Info).ExecuteCommand() > 0) ? true : false;
         }
         public bool DetbUser(string Id)
         {
@@ -67,7 +77,12 @@ namespace ProjectWebDataAccess
         {
             return Db.Updateable(new tbUser() { Id = Convert.ToInt32(Id) }).UpdateColumns(it => new { it.Password }).ReSetValue(it => it.Password == Password).ExecuteCommand() > 0;
         }
-
+        /// <summary>
+        /// 用户分配角色
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <param name="RoleId"></param>
+        /// <returns></returns>
         public ResultInfo User_authorization_Roles(string UserId, string RoleId)
         {
             ResultInfo resuit = new ResultInfo();
@@ -101,6 +116,9 @@ namespace ProjectWebDataAccess
             }
             return resuit;
         }
-
+        public tbUser GetUserInfo(int UserId)
+        {
+            return Db.Queryable<tbUser>().Where(i => i.Id == UserId).First();
+        }
     }
 }

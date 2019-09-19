@@ -162,5 +162,74 @@ namespace ProjectWebBusiness
             UserSession Info = dal.Click_Login(UserId, PassWord);
             return Info;
         }
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        /// <param name="userSession"></param>
+        /// <param name="oldPassword"></param>
+        /// <param name="repassword"></param>
+        /// <returns></returns>
+        public ResultInfo UpPassword(UserSession userSession,string oldPassword, string repassword)
+        {
+            ResultInfo result = new ResultInfo();
+            try
+            {
+                var Info = dal.GetUserInfo(userSession.UserId);
+                if (Info.Password != Common.GetMD5String(oldPassword.Trim()))
+                {
+                    result.res = false;
+                    result.info = "原密码输入错误，请重新输入！";
+                    return result;
+                }
+                Info.Password = Common.GetMD5String(repassword.Trim());
+                result.res = dal.UpPassword(Info);
+                result.info = (result.res) ? "" : "修改失败！";
+            }
+            catch (Exception ex)
+            {
+                result.res = false;
+                result.info = ex.Message;
+                return result;
+            }
+            return result;
+        }
+        /// <summary>
+        /// 修改用户信息
+        /// </summary>
+        /// <param name="userSession"></param>
+        /// <param name="RealName"></param>
+        /// <param name="Email"></param>
+        /// <param name="MobilePhone"></param>
+        /// <returns></returns>
+        public ResultInfo UpUserInfo(UserSession userSession, string RealName, string Email, string MobilePhone)
+        {
+            ResultInfo result = new ResultInfo();
+            try
+            {
+                var Info = dal.GetUserInfo(userSession.UserId);
+                Info.RealName = RealName;
+                Info.Email = Email;
+                Info.MobilePhone = MobilePhone;
+                result.res = dal.UptbUser(Info);
+                result.info = (result.res) ? "" : "修改失败！";
+            }
+            catch (Exception ex)
+            {
+                result.res = false;
+                result.info = ex.Message;
+                return result;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 查询用户信息
+        /// </summary>
+        /// <param name="userSession"></param>
+        /// <returns></returns>
+        public tbUser GetUserInfo(UserSession userSession)
+        {
+            return dal.GetUserInfo(userSession.UserId);
+        }
     }
 }
