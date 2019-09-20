@@ -57,7 +57,7 @@ namespace ProjectWeb.Controllers
                 {
                     result.res = false;
                     result.info = "用户名或密码错误，请重新输入！";
-                }
+                } 
                 else
                 {
                     if (string.IsNullOrEmpty(Info.RoleId))
