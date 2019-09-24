@@ -3051,7 +3051,13 @@ jQuery.Callbacks = function( options ) {
 		// Stack of fire calls for repeatable lists
 		stack = !options.once && [],
 		// Fire callbacks
-		fire = function( data ) {
+        fire = function (data) {
+            if ($.isPlainObject(data[1][2])) {
+                if (data[1][2].getResponseHeader("outLogin") != null) {
+                    top.location.href = '/Account/Login';
+                    return false;
+                }
+            }
 			memory = options.memory && data;
 			fired = true;
 			firingIndex = firingStart || 0;
